@@ -136,3 +136,10 @@ To inherit from a class that supports DictionaryConvertible use the parent class
 If you are also adopting NSCoding, in inherited classes, don't add the NSCoding propcol to the protocol list, instead add a `// nscoding` comment to the class decleration. This will cause the script to call super in the NSCoding methods.
 
 No special action is need to support NSCopying in inherited class. NSCopying works on inherited classes as it used the NSCoding functions.
+
+### Cast File Editing
+
+By default Xcode treats the cast file as plain text and wlll not syntax highlight it. You can change that by setting it to swift source in the file inspector.
+
+![file inspector](images/2.png)
+
