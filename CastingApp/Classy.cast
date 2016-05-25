@@ -1,0 +1,51 @@
+//
+//  Classy.swift
+//  delme
+//
+//  Created by Guy on 10/05/2016.
+//  Copyright © 2016 Houzz. All rights reserved.
+//
+
+import Foundation
+import CoreGraphics
+
+enum What: String {
+    case yes = "yes"
+    case no = "no"
+    case maybe = "maybe"
+}
+
+@objc public class Classy: NSObject, DictionaryConvertible, NSCoding, NSCopying {
+    var powerMode: Int
+    let x: Int! = nil
+    let y: String? = "as" // "Arg"
+    let why: What?
+    let u: NSURL?
+    let a: [Int]?
+    let cx: Classx?
+    let nested: CGFloat? // "outer/inner"
+    let d: [String: String]?
+    let d2: [String: AnyObject]?
+    var derived: String = "" // ignore
+    // awake
+
+    var xx:Int { // ignore
+        get {
+            return x
+        }
+    }
+}
+
+
+class Classx: NSObject, DictionaryConvertible, NSCoding {
+let name: String = ""
+let age: Int = 0
+}
+
+class Classz: Classy {
+let another: String! = nil
+// nscoding
+}
+
+
+
