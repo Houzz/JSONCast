@@ -1,4 +1,4 @@
-#!/usr/bin/env xcrun swift
+#!/usr/bin/env -i xcrun swift
 //  Created by Guy on 11/03/2016.
 //  Copyright © 2016 Houzz. All rights reserved.
 
