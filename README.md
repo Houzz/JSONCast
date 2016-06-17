@@ -15,7 +15,7 @@ Create a .cast file with your properties as follows:
 	class A: DictionaryConvertible {
 		let b: Int
 		let c: String?
-		let d: NSURL // "url"
+		let d: NSURL //! "url"
 	}
 	
 Will create a class that confrms to the DistionaryCpnvertible porotocol that is mapped from a dictionary that has a key `"b"` that holds an Int, it can either be a number or a string that is converted to a number, the key `"c"` is optional and may not appear in the dictionary, it holds a string value, and a key `"url"` that is mapped to the property `d` in code. You need never need to look at the generated file, it's not important. Add your methods in a different file as an extension to class A.
@@ -31,9 +31,11 @@ Will create a class that confrms to the DistionaryCpnvertible porotocol that is 
  
  Do surce files mathching *.cast, use script and type the following script:
  
-    ${SRCROOT}/cast -c "$INPUT_FILE_PATH" "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.swift"
+    ${SRCROOT}/cast -c -n "$INPUT_FILE_PATH" "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.swift"
 
-The -c -s needed if you want to capitalize the key names, so a property named "age" will use the key "Age". Without the -c key names are the same as property names, that is the property "age" will use the key "age." In the output files put `${DERIVED_SOURCES_DIR}/${INPUT_FILE_BASE}.swift` as the output file.
+The -c command line option can be used if you want to capitalize the key names, so a property named "age" will use the key "Age". Without the -c key names are the same as property names, that is the property "age" will use the key "age." In the output files put `${DERIVED_SOURCES_DIR}/${INPUT_FILE_BASE}.swift` as the output file.
+
+If the -n command line option is specified, empty strings in the JSON (e.g. `"a": ""`) will be mapped to nil String? values. Without it the will map to empty strings.
 
 Now create the cast script, in terminal cd to your project dir and type:
 
@@ -51,13 +53,13 @@ The DictionaryConvertible protocol defines two methods, init?(dictionary: [Strin
 
 ### Properties
 
-Each property can be defined with a let or var and must include a type, the script isn't as smart as the compiiler in inferring types. You can add a default value with `= value` If you want to define a special key mapping add the key in a comment, such as `// "Key" or `// "Level1/Level2/Key"` to define a key path into the dictionary, that is the key Level1 is assumed to contain a dictionary that has the key Level2 which is a dicionary which has the key "Key" which contains the value.
+Each property can be defined with a let or var and must include a type, the script isn't as smart as the compiiler in inferring types. You can add a default value with `= value` If you want to define a special key mapping add the key in a comment, such as `//! "Key" or `//! "Level1/Level2/Key"` to define a key path into the dictionary, that is the key Level1 is assumed to contain a dictionary that has the key Level2 which is a dicionary which has the key "Key" which contains the value.
 
 Each property can have a default value which is assigned if the corrosponding key is not found in the dictionary. Default values are provided as an initial value in swift, e.g. `let x:String = "default"`
 
 Properties that are defined as optional or properties that are not optional but have a default value are also treated as optional meaning if the corrosponding key is not found in the dictionary, the default value is used. Required properties will cause the init to fail and return nil if their corrosponding key is missing from the dictionary.
 
-if you annotate a property decleration with a `// ignore` comment, it will be ignored by the cast script and will not be included in the nscoding encoding and in the init from dictionary. Since extensions cannot add stored properties to a class, you can use this to add stored properties which are derived from other properties so are not in the dictionary.
+if you annotate a property decleration with a `//! ignore` comment, it will be ignored by the cast script and will not be included in the nscoding encoding and in the init from dictionary. Since extensions cannot add stored properties to a class, you can use this to add stored properties which are derived from other properties so are not in the dictionary.
 
 Here is a summary of the different property declerations:
 
@@ -65,8 +67,8 @@ Here is a summary of the different property declerations:
 		let a: Int
 		let b: String?
 		var c: Int = 0
-		let d: [int]  // "Other"
-		var e: NSURL? // ignore
+		let d: [int]  //! "Other"
+		var e: NSURL? //! ignore
 	}
 	
 In this definition we have a readonly property a that will be initialized from the key "a" in the dictionary, and is required. If the dictionary does not have a key "a" the init will fail. The property b is a String and is optional, if the dictionary does not have a key "b", b will be nil. The read-write property c is an int, if the dictinary does not have a key "c", c will be assiged the default value of 0. The property d will be initialized from the key `Other` in the dictionary that should contain an array of integers , and the property e is a derived property that will not be included in the initializer.
@@ -121,7 +123,7 @@ You can extend Mapper to support any new custom type you have. By default Maper 
 
 ### AwakeFromDictionary
 
-By adding a `// awake` comment to the class / struct decleration the init will call an `awakeFromDictionary(dict: [String: AnyObject]) -> Bool` functionary passing it the dictionary that was used to initialize the object. If the function returns true the init will succeed, if it returns false the init will fail. You can use the awakeFromDictionary method to perform last value validations after the dictionary is parsed as well as compute any derived value you need or do any post processing after the dictionary is read.
+By adding a `//! awake` comment to the class / struct decleration the init will call an `awakeFromDictionary(dict: [String: AnyObject]) -> Bool` functionary passing it the dictionary that was used to initialize the object. If the function returns true the init will succeed, if it returns false the init will fail. You can use the awakeFromDictionary method to perform last value validations after the dictionary is parsed as well as compute any derived value you need or do any post processing after the dictionary is read.
 
 ### Adopting NSEncoding and NSCopying
 
@@ -133,7 +135,7 @@ To Adopt NSCopying add it to the list of protocols your class conforms to. A cop
 
 To inherit from a class that supports DictionaryConvertible use the parent class name in the inheritene decleration, don't add a DictionaryConvertible decelration to the protocol list. Be not adding a DictionaryConvertible decleration, the script knows that a parent class declares it and will use the approprate calls to super in the init and dictionaryRepresentation() functions.
 
-If you are also adopting NSCoding, in inherited classes, don't add the NSCoding propcol to the protocol list, instead add a `// nscoding` comment to the class decleration. This will cause the script to call super in the NSCoding methods.
+If you are also adopting NSCoding, in inherited classes, don't add the NSCoding propcol to the protocol list, instead add a `//! nscoding` comment to the class decleration. This will cause the script to call super in the NSCoding methods.
 
 No special action is need to support NSCopying in inherited class. NSCopying works on inherited classes as it used the NSCoding functions.
 

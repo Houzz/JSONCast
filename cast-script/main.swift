@@ -14,6 +14,7 @@ var enumMapping = [String: String]()
 var isStruct = false
 var classAccess = ""
 var didImportCast = false
+var nullEmptyString = false
 
 let encodeMap = [
     "Bool": ("aCoder.encodeBool(%@, forKey: \"%@\")", "aDecoder.decodeBoolForKey(\"%@\")"),
@@ -189,7 +190,12 @@ struct VarInfo {
             mapStatement = "\(type)(rawValue: v)"
         }
 
-        output.append("if let v: \(type) = \(mapStatement) { ")
+        var whereStatement = ""
+        if nullEmptyString && type == "String" {
+            whereStatement = "where !v.isEmpty "
+        }
+
+        output.append("if let v: \(type) = \(mapStatement) \(whereStatement){ ")
         output.append("\(name) = v")
 
         if let def = defaultValue {
@@ -347,6 +353,9 @@ for (idx, arg) in Process.arguments.enumerate() {
     switch arg {
     case "-c":
         upperCase = true
+
+    case "-n":
+        nullEmptyString = true
 
     default:
         if inputFile == nil {
