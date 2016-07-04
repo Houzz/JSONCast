@@ -33,15 +33,25 @@ Will create a class that confrms to the DistionaryCpnvertible porotocol that is 
  
     ${SRCROOT}/cast -c -n "$INPUT_FILE_PATH" "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.swift"
 
-The -c command line option can be used if you want to capitalize the key names, so a property named "age" will use the key "Age". Without the -c key names are the same as property names, that is the property "age" will use the key "age." In the output files put `${DERIVED_SOURCES_DIR}/${INPUT_FILE_BASE}.swift` as the output file.
-
-If the -n command line option is specified, empty strings in the JSON (e.g. `"a": ""`) will be mapped to nil String? values. Without it the will map to empty strings.
 
 Now create the cast script, in terminal cd to your project dir and type:
 
     ln -s path/to/cast-script/main.swift cast
     
 Now try adding a .cast file to your project and it should compile.
+
+###Command line options:
+
+The cast scripts accepts the following command line options:
+
+__-c__  
+Capitalize the key names, so a property named "age" will use the key "Age". Without the -c key names are the same as property names, that is the property "age" will use the key "age." In the output files put `${DERIVED_SOURCES_DIR}/${INPUT_FILE_BASE}.swift` as the output file.
+
+__-i__  
+Case insensitve keys. The keys in the dictionary are case insensitve, so the property "age" will match the key "Age" or "AGE" or any case variation.
+
+__-n__  
+If the -n command line option is specified, empty strings in the JSON (e.g. `"a": ""`) will be mapped to nil String? values. Without it the will map to empty strings.
 
 ## Advanced Usage
 
