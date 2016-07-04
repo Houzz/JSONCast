@@ -36,7 +36,7 @@
 			outputFiles = (
 				"${DERIVED_SOURCES_DIR}/${INPUT_FILE_BASE}.swift",
 			);
-			script = "${SRCROOT}/cast -c \"$INPUT_FILE_PATH\" \"$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.swift\"\n";
+			script = "${SRCROOT}/cast -i \"$INPUT_FILE_PATH\" \"$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.swift\"\n";
 		};
 /* End PBXBuildRule section */
 
@@ -372,6 +372,7 @@
 					};
 					E46F92611CF07BBB00BFE4AF = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
 					};
 					E46F92951CF0802F00BFE4AF = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -595,6 +596,7 @@
 				PROVISIONING_PROFILE = "7642293e-12b0-4cd3-81f5-0d8f60a47de5";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -802,6 +804,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -827,6 +830,7 @@
 				PROVISIONING_PROFILE = "0eb6405e-d817-4762-a524-0e6a2de5cfd7";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";

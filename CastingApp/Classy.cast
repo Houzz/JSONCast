@@ -38,12 +38,12 @@ enum What: String {
 
 
 class Classx: NSObject, DictionaryConvertible, NSCoding {
-let name: String = ""
-let age: Int = 0
+    let name: String = ""
+    let age: Int = 0
 }
 
 class Classz: Classy {
-let another: String! = nil
+    let another: String! = nil
 //! nscoding
 }
 

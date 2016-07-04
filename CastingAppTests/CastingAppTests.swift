@@ -33,7 +33,7 @@ class CastingAppTests: XCTestCase {
         XCTAssert(a.powerMode == 0)
         XCTAssert(a.u == nil)
         let dict = a.dictionaryRepresentation()
-        XCTAssert(dict["X"] as! Int == 3)
+        XCTAssert(dict["x"] as! Int == 3)
 
         let b = Classz(dictionary: [
             "X": "3",
@@ -59,8 +59,8 @@ class CastingAppTests: XCTestCase {
         XCTAssert(b.d!["k"] == "v")
         XCTAssert(b.d2!["k2"] as! Int == 3)
         let dict2 = b.dictionaryRepresentation()
-        XCTAssert(dict2["X"] as! Int == 3)
-        XCTAssert((dict2["U"] as! NSURL) == NSURL(string: "http://houzz.com"))
+        XCTAssert(dict2["x"] as! Int == 3)
+        XCTAssert((dict2["u"] as! NSURL) == NSURL(string: "http://houzz.com"))
 
         let d = b.copy() as! Classz
         XCTAssert(b.x == d.x)

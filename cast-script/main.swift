@@ -15,6 +15,7 @@ var isStruct = false
 var classAccess = ""
 var didImportCast = false
 var nullEmptyString = false
+var ignoreCase = false
 
 let encodeMap = [
     "Bool": ("aCoder.encodeBool(%@, forKey: \"%@\")", "aDecoder.decodeBoolForKey(\"%@\")"),
@@ -102,6 +103,8 @@ struct VarInfo {
         if upperCase {
             let n = name as NSString
             self.key = key ?? n.substringToIndex(1).capitalizedString + n.substringFromIndex(1)
+        } else if ignoreCase {
+            self.key = (key ?? name).lowercaseString
         } else {
             self.key = key ?? name
         }
@@ -234,7 +237,13 @@ func createFunctions() {
 
     // init
     let reqStr = isStruct ? "" : "required"
-    output.append("\(reqStr) \(classAccess) init?(dictionary dict: [String: AnyObject]) {")
+
+    if ignoreCase {
+        output.append("\(reqStr) \(classAccess) init?(dictionary unknownCaseDict: [String: AnyObject]) {")
+        output.append("        guard let dict = Mapper.lowercaseDictionary(unknownCaseDict) else { return nil }")
+    } else {
+        output.append("\(reqStr) \(classAccess) init?(dictionary dict: [String: AnyObject]) {")
+    }
 
     for variable in variables {
         let comp = variable.key.componentsSeparatedByString("/")
@@ -251,7 +260,11 @@ func createFunctions() {
                     }
                 }
             } else {
-                output.append("\t\tif let dict = dict[\"\(aKey)\"] as? [String: AnyObject] {")
+                if ignoreCase {
+                    output.append("\t\tif let dict = Mapper.lowercaseDictionary(dict[\"\(aKey)\"] as? [String: AnyObject]) {")
+                } else {
+                    output.append("\t\tif let dict = dict[\"\(aKey)\"] as? [String: AnyObject] {")
+                }
             }
         }
     }
@@ -353,9 +366,14 @@ for (idx, arg) in Process.arguments.enumerate() {
     switch arg {
     case "-c":
         upperCase = true
+        ignoreCase = false
 
     case "-n":
         nullEmptyString = true
+
+    case "-i":
+        upperCase = false
+        ignoreCase = true
 
     default:
         if inputFile == nil {

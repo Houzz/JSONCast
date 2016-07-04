@@ -300,4 +300,15 @@ public class Mapper {
     public class func unmap(object: Any?) -> AnyObject? {
         return object as? AnyObject
     }
+
+    public class func lowercaseDictionary(dict: [String: AnyObject]?) -> [String: AnyObject]? {
+        guard let dict = dict else {
+            return nil
+        }
+        var outDict = [String: AnyObject]()
+        for (key, object) in dict {
+            outDict[key.lowercaseString] = object
+        }
+        return outDict
+    }
 }
