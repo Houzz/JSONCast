@@ -27,6 +27,10 @@ public extension DictionaryConvertible {
         }
         self.init(dictionary: dict)
     }
+
+    func awakeWithDictionary(dict: [String: AnyObject]) -> Bool {
+        return true
+    }
 }
 
 public protocol BasicType {

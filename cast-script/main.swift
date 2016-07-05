@@ -273,7 +273,7 @@ func createFunctions() {
     }
 
     if callAwake {
-        if override.isEmpty {
+        if classInheritence!.indexOf("DictionaryConvertible") > 0 {
             output.append("\t\tsuper.init()")
         }
         output.append("\t\tif !awakeWithDictionary(dict) { return nil }")
