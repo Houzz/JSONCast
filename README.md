@@ -47,8 +47,8 @@ Now try adding a .cast file to your project and it should compile.
 The cast scripts accepts the following command line options:
 
 __-c__  
-  
 Capitalize the key names, so a property named "age" will use the key "Age". Without the -c key names are the same as property names, that is the property "age" will use the key "age." 
+
 __-i__  
 Case insensitve keys. The keys in the dictionary are case insensitve, so the property "age" will match the key "Age" or "AGE" or any case variation.
 
