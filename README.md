@@ -33,6 +33,8 @@ Will create a class that confrms to the DistionaryCpnvertible porotocol that is 
  
     ${SRCROOT}/cast -c -n "$INPUT_FILE_PATH" "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.swift"
 
+ In the output files put `${DERIVED_SOURCES_DIR}/${INPUT_FILE_BASE}.swift` as the output file.
+
 
 Now create the cast script, in terminal cd to your project dir and type:
 
@@ -45,8 +47,8 @@ Now try adding a .cast file to your project and it should compile.
 The cast scripts accepts the following command line options:
 
 __-c__  
-Capitalize the key names, so a property named "age" will use the key "Age". Without the -c key names are the same as property names, that is the property "age" will use the key "age." In the output files put `${DERIVED_SOURCES_DIR}/${INPUT_FILE_BASE}.swift` as the output file.
-
+  
+Capitalize the key names, so a property named "age" will use the key "Age". Without the -c key names are the same as property names, that is the property "age" will use the key "age." 
 __-i__  
 Case insensitve keys. The keys in the dictionary are case insensitve, so the property "age" will match the key "Age" or "AGE" or any case variation.
 
