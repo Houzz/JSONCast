@@ -29,7 +29,7 @@ Will create a class that confrms to the DistionaryCpnvertible porotocol that is 
 
  ![build rule](images/1.png "build rule") 
  
- Do surce files mathching *.cast, use script and type the following script:
+ Do source files matching *.cast, use script and type the following script:
  
     ${SRCROOT}/cast -c -n "$INPUT_FILE_PATH" "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.swift"
 
