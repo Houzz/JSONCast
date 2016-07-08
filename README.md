@@ -133,9 +133,10 @@ You can extend Mapper to support any new custom type you have. By default Maper 
 
 
 
-### AwakeFromDictionary
+### Awake
 
-By adding a `//! awake` comment to the class / struct decleration the init will call an `awakeFromDictionary(dict: [String: AnyObject]) -> Bool` functionary passing it the dictionary that was used to initialize the object. If the function returns true the init will succeed, if it returns false the init will fail. You can use the awakeFromDictionary method to perform last value validations after the dictionary is parsed as well as compute any derived value you need or do any post processing after the dictionary is read.
+
+By adding a `//! awake` comment to the class / struct decleration the init will call an `awake(with dictionary: [String: AnyObject]) -> Bool` functionary passing it the dictionary that was used to initialize the object. If the function returns true the init will succeed, if it returns false the init will fail. You can use the awakeFromDictionary method to perform last value validations after the dictionary is parsed as well as compute any derived value you need or do any post processing after the dictionary is read.
 
 ### Adopting NSEncoding and NSCopying
 
