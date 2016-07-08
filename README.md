@@ -157,3 +157,8 @@ By default Xcode treats the cast file as plain text and wlll not syntax highligh
 
 ![file inspector](images/2.png)
 
+## Swift 3
+
+JSON Cast is Swift 3 ready! If you are working with Xcode 8 beta and Swift 3 there is a Swift3 branch you can use which is compatible.
+
+
