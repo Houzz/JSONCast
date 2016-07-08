@@ -14,31 +14,31 @@ public protocol DictionaryConvertible {
 }
 
 public extension DictionaryConvertible {
-    init?(json: NSData) {
-        guard let dict = (try? NSJSONSerialization.JSONObjectWithData(json, options: NSJSONReadingOptions(rawValue: 0))) as? [String: AnyObject] else {
+    init?(json: Data) {
+        guard let dict = (try? JSONSerialization.jsonObject(with: json, options: JSONSerialization.ReadingOptions(rawValue: 0))) as? [String: AnyObject] else {
             return nil
         }
         self.init(dictionary: dict)
     }
 
     init?(json: String) {
-        guard let dict = (try? NSJSONSerialization.JSONObjectWithData(json.dataUsingEncoding(NSUTF8StringEncoding)!, options: NSJSONReadingOptions(rawValue: 0))) as? [String: AnyObject] else {
+        guard let dict = (try? JSONSerialization.jsonObject(with: json.data(using: String.Encoding.utf8)!, options: JSONSerialization.ReadingOptions(rawValue: 0))) as? [String: AnyObject] else {
             return nil
         }
         self.init(dictionary: dict)
     }
 
-    func awakeWithDictionary(dict: [String: AnyObject]) -> Bool {
+    func awake(with dictionary: [String: AnyObject]) -> Bool {
         return true
     }
 }
 
 public protocol BasicType {
-    static func fromDictionaryValue(object: AnyObject) -> Self
+    static func fromDictionaryValue(_ object: AnyObject) -> Self
 }
 
 extension Int: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> Int {
+    public static func fromDictionaryValue(_ object: AnyObject) -> Int {
         switch object {
         case let x as Int:
             return x
@@ -53,7 +53,7 @@ extension Int: BasicType {
 }
 
 extension UInt: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> UInt {
+    public static func fromDictionaryValue(_ object: AnyObject) -> UInt {
         switch object {
         case let x as UInt:
             return x
@@ -68,7 +68,7 @@ extension UInt: BasicType {
 }
 
 extension CGFloat: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> CGFloat {
+    public static func fromDictionaryValue(_ object: AnyObject) -> CGFloat {
         switch object {
         case let x as CGFloat:
             return x
@@ -83,7 +83,7 @@ extension CGFloat: BasicType {
 }
 
 extension Double: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> Double {
+    public static func fromDictionaryValue(_ object: AnyObject) -> Double {
         switch object {
         case let x as Double:
             return x
@@ -98,7 +98,7 @@ extension Double: BasicType {
 }
 
 extension Float: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> Float {
+    public static func fromDictionaryValue(_ object: AnyObject) -> Float {
         switch object {
         case let x as Float:
             return x
@@ -113,7 +113,7 @@ extension Float: BasicType {
 }
 
 extension Bool: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> Bool {
+    public static func fromDictionaryValue(_ object: AnyObject) -> Bool {
         switch object {
         case let x as Bool:
             return x
@@ -128,7 +128,7 @@ extension Bool: BasicType {
 }
 
 extension String: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> String {
+    public static func fromDictionaryValue(_ object: AnyObject) -> String {
         switch object {
         case let x as String:
             return x
@@ -140,7 +140,7 @@ extension String: BasicType {
 }
 
 public class Mapper {
-    public class func map<V: DictionaryConvertible>(object: AnyObject?) -> [V]? {
+    public class func map<V: DictionaryConvertible>(_ object: AnyObject?) -> [V]? {
         switch object {
         case let dictArray as [[String: AnyObject]]:
             var items = [V]()
@@ -156,7 +156,7 @@ public class Mapper {
         }
     }
 
-    public class func map<V: DictionaryConvertible>(object: AnyObject?) -> V? {
+    public class func map<V: DictionaryConvertible>(_ object: AnyObject?) -> V? {
         switch object {
         case let item as [String: AnyObject]:
             return V.init(dictionary: item)
@@ -166,7 +166,7 @@ public class Mapper {
         }
     }
 
-    public class func map(object: AnyObject?) -> [String: AnyObject]? {
+    public class func map(_ object: AnyObject?) -> [String: AnyObject]? {
         switch object {
         case let d as [String: AnyObject]:
             return d
@@ -176,7 +176,7 @@ public class Mapper {
         }
     }
 
-    public class func map(object: AnyObject?) -> [String: String]? {
+    public class func map(_ object: AnyObject?) -> [String: String]? {
         switch object {
         case let d as [String: String]:
             return d
@@ -186,7 +186,7 @@ public class Mapper {
         }
     }
 
-    public class func map<V: BasicType>(object: AnyObject?) -> [V]? {
+    public class func map<V: BasicType>(_ object: AnyObject?) -> [V]? {
         switch object {
         case let array as [AnyObject]:
             var items = [V]()
@@ -200,7 +200,7 @@ public class Mapper {
         }
     }
 
-    public class func map(object: AnyObject?) -> CGFloat? {
+    public class func map(_ object: AnyObject?) -> CGFloat? {
         switch object {
         case let x as CGFloat:
             return x
@@ -213,7 +213,7 @@ public class Mapper {
         }
     }
 
-    public class func map(object: AnyObject?) -> Double? {
+    public class func map(_ object: AnyObject?) -> Double? {
         switch object {
         case let x as Double:
             return x
@@ -226,7 +226,7 @@ public class Mapper {
         }
     }
 
-    public class func map(object: AnyObject?) -> Int? {
+    public class func map(_ object: AnyObject?) -> Int? {
         switch object {
         case let x as Int:
             return x
@@ -239,7 +239,7 @@ public class Mapper {
         }
     }
 
-    public class func map(object: AnyObject?) -> UInt? {
+    public class func map(_ object: AnyObject?) -> UInt? {
         switch object {
         case let x as UInt:
             return x
@@ -252,7 +252,7 @@ public class Mapper {
         }
     }
 
-    public class func map(object: AnyObject?) -> String? {
+    public class func map(_ object: AnyObject?) -> String? {
         switch object {
         case let str as String:
             return str
@@ -262,7 +262,7 @@ public class Mapper {
         }
     }
 
-    public class func map(object: AnyObject?) -> Bool? {
+    public class func map(_ object: AnyObject?) -> Bool? {
         switch object {
         case let x as Bool:
             return x
@@ -275,24 +275,24 @@ public class Mapper {
         }
     }
 
-    public class func map(object: AnyObject?) -> NSURL? {
+    public class func map(_ object: AnyObject?) -> URL? {
         switch object {
-        case let x as NSURL:
+        case let x as URL:
             return x
 
         case let x as String:
-            return NSURL(string: x)
+            return URL(string: x)
 
         default:
             return nil
         }
     }
 
-    public class func map(object: AnyObject?) -> [NSURL]? {
+    public class func map(_ object: AnyObject?) -> [URL]? {
         if let object = object as? [AnyObject] {
-            var items = [NSURL]()
+            var items = [URL]()
             for item in object {
-                if let u: NSURL = Mapper.map(item) {
+                if let u: URL = Mapper.map(item) {
                     items.append(u)
                 }
             }
@@ -301,17 +301,17 @@ public class Mapper {
         return nil
     }
 
-    public class func unmap(object: Any?) -> AnyObject? {
+    public class func unmap(_ object: Any?) -> AnyObject? {
         return object as? AnyObject
     }
 
-    public class func lowercaseDictionary(dict: [String: AnyObject]?) -> [String: AnyObject]? {
+    public class func lowercaseDictionary(_ dict: [String: AnyObject]?) -> [String: AnyObject]? {
         guard let dict = dict else {
             return nil
         }
         var outDict = [String: AnyObject]()
         for (key, object) in dict {
-            outDict[key.lowercaseString] = object
+            outDict[key.lowercased()] = object
         }
         return outDict
     }

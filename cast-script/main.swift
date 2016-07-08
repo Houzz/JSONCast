@@ -17,30 +17,30 @@ var nullEmptyString = false
 var ignoreCase = false
 
 let encodeMap = [
-    "Bool": ("aCoder.encodeBool(%@, forKey: \"%@\")", "aDecoder.decodeBoolForKey(\"%@\")"),
-    "Float": ("aCoder.encodeFloat(%@, forKey: \"%@\")", "aDecoder.decodeFloatForKey(\"%@\")"),
-    "Double": ("aCoder.encodeDouble(%@, forKey: \"%@\")", "aDecoder.decodeDoubleForKey(\"%@\")"),
-    "CGFloat": ("aCoder.encodeDouble(Double(%@), forKey: \"%@\")", "CGFloat(aDecoder.decodeDoubleForKey(\"%@\"))"),
-    "Int": ("aCoder.encodeInteger(%@, forKey: \"%@\")", "aDecoder.decodeIntegerForKey(\"%@\")"),
-    "UInt": ("aCoder.encodeInteger(Int(%@), forKey: \"%@\")", "UInt(aDecoder.decodeIntegerForKey(\"%@\"))")
+    "Bool": ("aCoder.encode(Bool(%@), forKey: \"%@\")", "aDecoder.decodeBool(forKey:\"%@\")"),
+    "Float": ("aCoder.encode(Float(%@), forKey: \"%@\")", "aDecoder.decodeFloat(forKey:\"%@\")"),
+    "Double": ("aCoder.encode(Double(%@), forKey: \"%@\")", "aDecoder.decodeDouble(forKey:\"%@\")"),
+    "CGFloat": ("aCoder.encode(Double(%@), forKey: \"%@\")", "CGFloat(aDecoder.decodeDouble(forKey:\"%@\"))"),
+    "Int": ("aCoder.encode(Int(%@), forKey: \"%@\")", "aDecoder.decodeInteger(forKey:\"%@\")"),
+    "UInt": ("aCoder.encode(Int(%@), forKey: \"%@\")", "UInt(aDecoder.decodeInteger(forKey:\"%@\"))")
 ]
 
 class Regex {
-    private let expression: NSRegularExpression
-    private var match: NSTextCheckingResult?
+    private let expression: RegularExpression
+    private var match: TextCheckingResult?
 
-    init(_ pattern: String, options: NSRegularExpressionOptions = []) {
-        self.expression = try! NSRegularExpression(pattern: pattern, options: options)
+    init(_ pattern: String, options: RegularExpression.Options = []) {
+        self.expression = try! RegularExpression(pattern: pattern, options: options)
     }
 
-    func matchGroups(input: String) -> [String?]? {
-        match = expression.firstMatchInString(input, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
+    func matchGroups(_ input: String) -> [String?]? {
+        match = expression.firstMatch(in: input, options: RegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
         if let match = match {
             var captures = [String?]()
             for group in 0 ..< match.numberOfRanges {
-                let r = match.rangeAtIndex(group)
+                let r = match.range(at: group)
                 if r.location != NSNotFound {
-                    let stringMatch = (input as NSString).substringWithRange(match.rangeAtIndex(group))
+                    let stringMatch = (input as NSString).substring(with: match.range(at: group))
                     captures.append(stringMatch)
                 } else {
                     captures.append(nil)
@@ -52,22 +52,22 @@ class Regex {
         }
     }
 
-    func match(input: String) -> Bool {
-        match = expression.firstMatchInString(input, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
+    func match(_ input: String) -> Bool {
+        match = expression.firstMatch(in: input, options: RegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
         return match != nil
     }
 
-    func replace(input: String, with template: String) -> String {
-        return expression.stringByReplacingMatchesInString(input, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count), withTemplate: template)
+    func replace(_ input: String, with template: String) -> String {
+        return expression.stringByReplacingMatches(in: input, options: RegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count), withTemplate: template)
     }
 
-    func numberOfMatchesIn(input: String) -> Int {
-        return expression.matchesInString(input, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count)).count
+    func numberOfMatchesIn(_ input: String) -> Int {
+        return expression.matches(in: input, options: RegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count)).count
     }
 }
 
 extension String {
-    func replace(regex: Regex, with template: String) -> String {
+    func replace(_ regex: Regex, with template: String) -> String {
         return regex.replace(self, with: template)
     }
 }
@@ -92,7 +92,7 @@ struct VarInfo {
         self.name = name
         if type.hasSuffix("?") || type.hasSuffix("!") {
             self.isNullable = true
-            self.type = type.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "!?"))
+            self.type = type.trimmingCharacters(in: CharacterSet(charactersIn: "!?"))
             self.optional = type.hasSuffix("?")
         } else {
             self.type = type
@@ -101,9 +101,9 @@ struct VarInfo {
         }
         if upperCase {
             let n = name as NSString
-            self.key = key ?? n.substringToIndex(1).capitalizedString + n.substringFromIndex(1)
+            self.key = key ?? n.substring(to: 1).capitalized + n.substring(from: 1)
         } else if ignoreCase {
-            self.key = (key ?? name).lowercaseString
+            self.key = (key ?? name).lowercased()
         } else {
             self.key = key ?? name
         }
@@ -139,7 +139,7 @@ struct VarInfo {
             if let f = encodeMap[vtype] {
                 ret += String(format: f.0, vv, name)
             } else {
-                ret += "aCoder.encodeObject(\(vv), forKey: \"\(name)\")"
+                ret += "aCoder.encode(\(vv), forKey: \"\(name)\")"
             }
 
             if optional {
@@ -160,9 +160,9 @@ struct VarInfo {
             var v: String
             if let f = encodeMap[vtype] {
                 let enc = String(format: f.1, name)
-                v = "\t\tif aDecoder.containsValueForKey(\"\(name)\") { let v = \(enc)"
+                v = "\t\tif aDecoder.containsValue(forKey:\"\(name)\") { let v = \(enc)"
             } else {
-                v = "if let v = aDecoder.decodeObjectForKey(\"\(name)\") as? \(vtype) {"
+                v = "if let v = aDecoder.decodeObject(forKey:\"\(name)\") as? \(vtype) {"
             }
 
             if vtype != type {
@@ -185,7 +185,7 @@ struct VarInfo {
         }
     }
 
-    func initFromKey(aKey: String) {
+    func initFromKey(_ aKey: String) {
         var mapStatement = "Mapper.map(dict[\"\(aKey)\"])"
         if isEnum {
             output.append("if let v: \(rawType!) = \(mapStatement) {")
@@ -245,8 +245,8 @@ func createFunctions() {
     }
 
     for variable in variables {
-        let comp = variable.key.componentsSeparatedByString("/")
-        for (idx, aKey) in comp.enumerate() {
+        let comp = variable.key.components(separatedBy: "/")
+        for (idx, aKey) in comp.enumerated() {
             if idx == comp.count - 1 {
                 variable.initFromKey(aKey)
                 for _ in 0 ..< idx {
@@ -273,10 +273,10 @@ func createFunctions() {
     }
 
     if callAwake {
-        if classInheritence!.indexOf("DictionaryConvertible") > 0 {
+        if classInheritence!.index(of: "DictionaryConvertible") > 0 {
             output.append("\t\tsuper.init()")
         }
-        output.append("\t\tif !awakeWithDictionary(dict) { return nil }")
+        output.append("\t\tif !awake(with: dict) { return nil }")
     }
 
     output.append("\t}")
@@ -290,15 +290,15 @@ func createFunctions() {
     }
 
     for variable in variables {
-        let keys = variable.key.componentsSeparatedByString("/")
-        for (idx, key) in keys.enumerate() {
+        let keys = variable.key.components(separatedBy: "/")
+        for (idx, key) in keys.enumerated() {
             let dName = (idx == 0) ? "dict" : "dict\(idx)"
             if idx == keys.count - 1 {
                 output.append("\t\tif let x = Mapper.unmap(\(variable.name)) {")
                 output.append("\t\t\t\(dName)[\"\(key)\"] = x")
                 output.append("\t\t}")
 
-                for idx2 in(0 ..< idx).reverse() {
+                for idx2 in(0 ..< idx).reversed() {
                     let idx3 = idx2 + 1
                     let dName = (idx2 == 0) ? "dict" : "dict\(idx2)"
                     let prevName = "dict\(idx3)"
@@ -334,9 +334,9 @@ func createFunctions() {
         output.append("\t}")
 
         // encodeWithCoder
-        output.append("    \(classAccess) \(codingOverrideString) func encodeWithCoder(aCoder: NSCoder) {")
+        output.append("    \(classAccess) \(codingOverrideString) func encode(with aCoder: NSCoder) {")
         if codingOverride {
-            output.append("\t\tsuper.encodeWithCoder(aCoder)")
+            output.append("\t\tsuper.encode(with: aCoder)")
         }
 
         for variable in variables {
@@ -348,8 +348,8 @@ func createFunctions() {
 //         NSCopying
 
         if classInheritence!.contains("NSCopying") && !isStruct {
-            output.append("\t\(classAccess) func copyWithZone(zone: NSZone) -> AnyObject {")
-            output.append("\t\treturn NSKeyedUnarchiver.unarchiveObjectWithData(NSKeyedArchiver.archivedDataWithRootObject(self))!")
+            output.append("\t\(classAccess) func copy(with zone: NSZone?) -> AnyObject {")
+            output.append("\t\treturn NSKeyedUnarchiver.unarchiveObject(with: NSKeyedArchiver.archivedData(withRootObject: self))!")
             output.append("\t}")
         }
     }
@@ -358,7 +358,7 @@ func createFunctions() {
 var inputFile: String? = nil
 var outputFile: String? = nil
 
-for (idx, arg) in Process.arguments.enumerate() {
+for (idx, arg) in Process.arguments.enumerated() {
     if idx == 0 {
         continue
     }
@@ -383,17 +383,17 @@ for (idx, arg) in Process.arguments.enumerate() {
     }
 }
 
-let input = try! String(contentsOfFile: inputFile!).componentsSeparatedByString("\n")
+let input = try! String(contentsOfFile: inputFile!).components(separatedBy: "\n")
 
 var inClass = false
-let classRegex = Regex("(class|struct) +([^ :]+)[ :]+(.*)\\{ *$", options: [.AnchorsMatchLines])
+let classRegex = Regex("(class|struct) +([^ :]+)[ :]+(.*)\\{ *$", options: [.anchorsMatchLines])
 let endBrace = Regex("\\}")
 let openBrace = Regex("\\{")
 let varRegex = Regex("(?!var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *(?://! *\"([^ ]+)\")?")
 let dictRegex = Regex("(?!var|let) +([^: ]+?) *: *(\\[.*?:.*?\\][!?]) *(?:= *([^ ]+))? *(?://! *\"([^ ]+)\")?")
-let ignoreRegex = Regex("(.*)//! *ignore", options: [.CaseInsensitive])
-let awakeRegex = Regex("//! *awake", options: [.CaseInsensitive])
-let codingRegex = Regex("//! *nscoding", options: [.CaseInsensitive])
+let ignoreRegex = Regex("(.*)//! *ignore", options: [.caseInsensitive])
+let awakeRegex = Regex("//! *awake", options: [.caseInsensitive])
+let codingRegex = Regex("//! *nscoding", options: [.caseInsensitive])
 let enumRegex = Regex("enum ([^ :]+)[ :]+([^ ]+)")
 let accessRegex = Regex("(public|private|internal)")
 var braceLevel = 0
@@ -403,7 +403,7 @@ var commentRegex = Regex("^//.*$")
 
 output.append("// ================================================================== ")
 output.append("//")
-let last = inputFile!.componentsSeparatedByString("/").last!
+let last = inputFile!.components(separatedBy: "/").last!
 output.append("// Generated from \(last)")
 output.append("//")
 output.append("// DO NOT EDIT THIS FILE. GENERATED FILE, EDITS WILL BE OVERWRITTEN")
@@ -472,7 +472,7 @@ for line in input {
         } else if priorBraceLevel == 0 {
             if let matches = classRegex.matchGroups(line) {
                 inClass = true
-                classInheritence = matches[3]?.stringByReplacingOccurrencesOfString(" ", withString: "").componentsSeparatedByString(",")
+                classInheritence = matches[3]?.replacingOccurrences(of: " ", with: "").components(separatedBy: ",")
                 className = matches[2]
                 variables = [VarInfo]()
                 callAwake = false
@@ -494,4 +494,4 @@ for line in input {
     output.append(outline)
 }
 
-try! output.joinWithSeparator("\n").writeToFile(outputFile!, atomically: true, encoding: NSUTF8StringEncoding)
+try! output.joined(separator: "\n").write(toFile: outputFile!, atomically: true, encoding: String.Encoding.utf8)
