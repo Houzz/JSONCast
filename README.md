@@ -1,5 +1,7 @@
 # JSON Cast
 
+We explain a bit more about JSON Cast in our [blog post]( http://blog.houzz.com/post/148054770808/a-json-parsing-class-generator).
+
 Easily create classes from parsed JSON and conform to NSCophing and NSEncoding. In a nutshell using JSON Cast you create a .cast file that is basically a swift definition of your class properties and cast will create a .swift file from it that has the necessary init methods to init from a JSON data or string, init from a dictionary as well as optionally NSCoding. Added as an Xcode build rule so swift files are automatically generated whenever the cast file is updated.
 
 - Supports swift class or struct (NSCoding / NSCopying only supported with classes)
