@@ -139,7 +139,7 @@ You can extend Mapper to support any new custom type you have. By default Maper 
 
 By adding a `//! awake` comment to the class / struct decleration the init will call an `awakeWithDictionary(dict: [String: AnyObject]) -> Bool` functionary passing it the dictionary that was used to initialize the object. If the function returns true the init will succeed, if it returns false the init will fail. You can use the awakeFromDictionary method to perform last value validations after the dictionary is parsed as well as compute any derived value you need or do any post processing after the dictionary is read.
 
-### Adopting NSEncoding and NSCopying
+### Adopting NSCoding and NSCopying
 
 To adopt NSCoding your oject has to be an objective-c compatible object (a limitation of the NSEncoding protocol), so it must inherit from NSObject. To adopt NSCoding, simply add it to the list of protocols your class conforms to and the appropriate init and encodeWithCoder functions will be generated.
 
