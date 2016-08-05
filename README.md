@@ -46,14 +46,17 @@ Now try adding a .cast file to your project and it should compile.
 
 The cast scripts accepts the following command line options:
 
-__-c__  
+__-c__  or __-uppercase__  
 Capitalize the key names, so a property named "age" will use the key "Age". Without the -c key names are the same as property names, that is the property "age" will use the key "age." 
 
-__-i__  
+__-i__  or __-ignorecase__  
 Case insensitve keys. The keys in the dictionary are case insensitve, so the property "age" will match the key "Age" or "AGE" or any case variation.
 
-__-n__  
+__-n__  or __-null__  
 If the -n command line option is specified, empty strings in the JSON (e.g. `"a": ""`) will be mapped to nil String? values. Without it the will map to empty strings.
+
+__-m__ or __-noimpoert__  
+Don't add an import Cast statement to the generated files. Useful if you chose to integrate by adding the mapper.swift file to your project instead of usig the cast framework
 
 ## Advanced Usage
 

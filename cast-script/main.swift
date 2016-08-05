@@ -1,5 +1,5 @@
 #!/usr/bin/env -i xcrun -sdk macosx swift
-//  Copyright © 2016 Houzz. All rights reserved.
+// Copyright © 2016 Houzz. All rights reserved.
 
 import Foundation
 
@@ -15,6 +15,7 @@ var classAccess = ""
 var didImportCast = false
 var nullEmptyString = false
 var ignoreCase = false
+var doImport = true
 
 let encodeMap = [
     "Bool": ("aCoder.encode(Bool(%@), forKey: \"%@\")", "aDecoder.decodeBool(forKey:\"%@\")"),
@@ -363,16 +364,19 @@ for (idx, arg) in Process.arguments.enumerated() {
         continue
     }
     switch arg {
-    case "-c":
+    case "-c", "-upper", "-uppercase":
         upperCase = true
         ignoreCase = false
 
-    case "-n":
+    case "-n", "-null", "-nullempty":
         nullEmptyString = true
 
-    case "-i":
+    case "-i", "-ignore", "-ignorecase":
         upperCase = false
         ignoreCase = true
+
+    case "-m", "-noimport":
+        doImport = false
 
     default:
         if inputFile == nil {
@@ -428,13 +432,15 @@ for line in input {
             inImportBlock = false
             if !didImportCast {
                 didImportCast = true
-                output.append("#if os(iOS)")
-                output.append("import Cast")
-                output.append("#elseif os(tvOS)")
-                output.append("import CastTV")
-                output.append("#else")
-                output.append("import CastX")
-                output.append("#endif")
+                if doImport {
+                    output.append("#if os(iOS)")
+                    output.append("import Cast")
+                    output.append("#elseif os(tvOS)")
+                    output.append("import CastTV")
+                    output.append("#else")
+                    output.append("import CastX")
+                    output.append("#endif")
+                }
             }
         }
     }
