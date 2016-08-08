@@ -136,7 +136,8 @@ extension Mapper {
     class func map(object: AnyObject?) -> NSDate? {
         switch object {
         case let x as String:
-            return NSDate(timeIntervalSince1970: NSTimeInterval(x)!)
+            guard let y = Int(x) else { return nil }
+            return NSDate(timeIntervalSince1970: NSTimeInterval(y))
 
         case let x as Int:
             return NSDate(timeIntervalSince1970: NSTimeInterval(x))
