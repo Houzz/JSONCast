@@ -27,21 +27,21 @@ let encodeMap = [
 ]
 
 class Regex {
-    private let expression: RegularExpression
-    private var match: TextCheckingResult?
+    private let expression: NSRegularExpression
+    private var match: NSTextCheckingResult?
 
-    init(_ pattern: String, options: RegularExpression.Options = []) {
-        self.expression = try! RegularExpression(pattern: pattern, options: options)
+    init(_ pattern: String, options: NSRegularExpression.Options = []) {
+        self.expression = try! NSRegularExpression(pattern: pattern, options: options)
     }
 
     func matchGroups(_ input: String) -> [String?]? {
-        match = expression.firstMatch(in: input, options: RegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
+        match = expression.firstMatch(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
         if let match = match {
             var captures = [String?]()
             for group in 0 ..< match.numberOfRanges {
-                let r = match.range(at: group)
+                let r = match.rangeAt(group)
                 if r.location != NSNotFound {
-                    let stringMatch = (input as NSString).substring(with: match.range(at: group))
+                    let stringMatch = (input as NSString).substring(with: match.rangeAt(group))
                     captures.append(stringMatch)
                 } else {
                     captures.append(nil)
@@ -54,16 +54,16 @@ class Regex {
     }
 
     func match(_ input: String) -> Bool {
-        match = expression.firstMatch(in: input, options: RegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
+        match = expression.firstMatch(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
         return match != nil
     }
 
     func replace(_ input: String, with template: String) -> String {
-        return expression.stringByReplacingMatches(in: input, options: RegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count), withTemplate: template)
+        return expression.stringByReplacingMatches(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count), withTemplate: template)
     }
 
     func numberOfMatchesIn(_ input: String) -> Int {
-        return expression.matches(in: input, options: RegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count)).count
+        return expression.matches(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count)).count
     }
 }
 
@@ -195,7 +195,7 @@ struct VarInfo {
 
         var whereStatement = ""
         if nullEmptyString && type == "String" {
-            whereStatement = "where !v.isEmpty "
+            whereStatement = ", !v.isEmpty "
         }
 
         output.append("if let v: \(type) = \(mapStatement) \(whereStatement){ ")
@@ -240,7 +240,7 @@ func createFunctions() {
 
     if ignoreCase {
         output.append("\(reqStr) \(classAccess) init?(dictionary unknownCaseDict: [String: AnyObject]) {")
-        output.append("        guard let dict = Mapper.lowercaseDictionary(unknownCaseDict) else { return nil }")
+        output.append("        guard let dict = Mapper.lowercased(unknownCaseDict) else { return nil }")
     } else {
         output.append("\(reqStr) \(classAccess) init?(dictionary dict: [String: AnyObject]) {")
     }
@@ -261,7 +261,7 @@ func createFunctions() {
                 }
             } else {
                 if ignoreCase {
-                    output.append("\t\tif let dict = Mapper.lowercaseDictionary(dict[\"\(aKey)\"] as? [String: AnyObject]) {")
+                    output.append("\t\tif let dict = Mapper.lowercased(dict[\"\(aKey)\"] as? [String: AnyObject]) {")
                 } else {
                     output.append("\t\tif let dict = dict[\"\(aKey)\"] as? [String: AnyObject] {")
                 }
@@ -425,7 +425,7 @@ for line in input {
             if !inImportBlock {
                 inImportBlock = true
             }
-            if let framework = matches[1] where framework.hasPrefix("Cast") {
+            if let framework = matches[1] , framework.hasPrefix("Cast") {
                 didImportCast = true
             }
         } else if inImportBlock {

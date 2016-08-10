@@ -34,11 +34,11 @@ public extension DictionaryConvertible {
 }
 
 public protocol BasicType {
-    static func fromDictionaryValue(_ object: AnyObject) -> Self
+    static func from(dictionaryValue object: AnyObject) -> Self
 }
 
 extension Int: BasicType {
-    public static func fromDictionaryValue(_ object: AnyObject) -> Int {
+    public static func from(dictionaryValue object: AnyObject) -> Int {
         switch object {
         case let x as Int:
             return x
@@ -53,7 +53,7 @@ extension Int: BasicType {
 }
 
 extension UInt: BasicType {
-    public static func fromDictionaryValue(_ object: AnyObject) -> UInt {
+    public static func from(dictionaryValue object: AnyObject) -> UInt {
         switch object {
         case let x as UInt:
             return x
@@ -68,7 +68,7 @@ extension UInt: BasicType {
 }
 
 extension CGFloat: BasicType {
-    public static func fromDictionaryValue(_ object: AnyObject) -> CGFloat {
+    public static func from(dictionaryValue object: AnyObject) -> CGFloat {
         switch object {
         case let x as CGFloat:
             return x
@@ -83,7 +83,7 @@ extension CGFloat: BasicType {
 }
 
 extension Double: BasicType {
-    public static func fromDictionaryValue(_ object: AnyObject) -> Double {
+    public static func from(dictionaryValue object: AnyObject) -> Double {
         switch object {
         case let x as Double:
             return x
@@ -98,7 +98,7 @@ extension Double: BasicType {
 }
 
 extension Float: BasicType {
-    public static func fromDictionaryValue(_ object: AnyObject) -> Float {
+    public static func from(dictionaryValue object: AnyObject) -> Float {
         switch object {
         case let x as Float:
             return x
@@ -113,7 +113,7 @@ extension Float: BasicType {
 }
 
 extension Bool: BasicType {
-    public static func fromDictionaryValue(_ object: AnyObject) -> Bool {
+    public static func from(dictionaryValue object: AnyObject) -> Bool {
         switch object {
         case let x as Bool:
             return x
@@ -128,7 +128,7 @@ extension Bool: BasicType {
 }
 
 extension String: BasicType {
-    public static func fromDictionaryValue(_ object: AnyObject) -> String {
+    public static func from(dictionaryValue object: AnyObject) -> String {
         switch object {
         case let x as String:
             return x
@@ -191,7 +191,7 @@ public class Mapper {
         case let array as [AnyObject]:
             var items = [V]()
             for item in array {
-                items.append(V.fromDictionaryValue(item))
+                items.append(V.from(dictionaryValue: item))
             }
             return items
 
@@ -305,7 +305,7 @@ public class Mapper {
         return object as? AnyObject
     }
 
-    public class func lowercaseDictionary(_ dict: [String: AnyObject]?) -> [String: AnyObject]? {
+    public class func lowercased(_ dict: [String: AnyObject]?) -> [String: AnyObject]? {
         guard let dict = dict else {
             return nil
         }
