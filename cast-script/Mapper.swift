@@ -9,8 +9,8 @@ import Foundation
 import CoreGraphics
 
 public protocol DictionaryConvertible {
-    init?(dictionary: [String: AnyObject])
-    func dictionaryRepresentation() -> [String: AnyObject]
+    init?(dictionary: [String: Any])
+    func dictionaryRepresentation() -> [String: Any]
 }
 
 public extension DictionaryConvertible {
@@ -302,17 +302,17 @@ public class Mapper {
     }
 
     public class func unmap(_ object: Any?) -> AnyObject? {
-        return object as? AnyObject
+        return object as AnyObject?
     }
 
-    public class func lowercased(_ dict: [String: AnyObject]?) -> [String: AnyObject]? {
+    public class func lowercased(_ dict: [String: Any]?) -> [String: AnyObject]? {
         guard let dict = dict else {
             return nil
         }
-        var outDict = [String: AnyObject]()
+        var outDict = [String: Any]()
         for (key, object) in dict {
             outDict[key.lowercased()] = object
         }
-        return outDict
+        return outDict as [String: AnyObject]
     }
 }
