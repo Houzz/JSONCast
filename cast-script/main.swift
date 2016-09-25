@@ -235,7 +235,7 @@ func createFunctions() {
         output.append("\(reqStr) \(classAccess) init?(dictionary unknownCaseDict: [String: Any]) {")
         output.append("        guard let dict = Mapper.lowercased(unknownCaseDict) else { return nil }")
     } else {
-        output.append("\(reqStr) \(classAccess) init?(dictionary dict: [String: AnyObject]) {")
+        output.append("\(reqStr) \(classAccess) init?(dictionary dict: [String: Any]) {")
     }
     
     for variable in variables {
@@ -254,9 +254,9 @@ func createFunctions() {
                 }
             } else {
                 if ignoreCase {
-                    output.append("\t\tif let dict = Mapper.lowercased(dict[\"\(aKey)\"] as? [String: AnyObject]) {")
+                    output.append("\t\tif let dict = Mapper.lowercased(dict[\"\(aKey)\"] as? [String: Any]) {")
                 } else {
-                    output.append("\t\tif let dict = dict[\"\(aKey)\"] as? [String: AnyObject] {")
+                    output.append("\t\tif let dict = dict[\"\(aKey)\"] as? [String: Any] {")
                 }
             }
         }
