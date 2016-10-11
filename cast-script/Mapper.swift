@@ -207,6 +207,9 @@ open class Mapper {
             
         case let str as String:
             return CGFloat(Double(str)!)
+
+        case let x as Int:
+            return CGFloat(x)
             
         default:
             return nil

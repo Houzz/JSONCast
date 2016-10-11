@@ -3,7 +3,6 @@
 
 import Foundation
 
-
 var classInheritence: [String]?
 var className: String?
 var output = [String]()
@@ -78,11 +77,11 @@ struct VarInfo {
     let name: String
     let type: String
     let defaultValue: String?
-    let key: String
+    let key: [String]
     var optional: Bool
     let isNullable: Bool
     
-    init(name: String, type: String, defaultValue: String? = nil, key: String? = nil) {
+    init(name: String, type: String, defaultValue: String? = nil, key in_key: String? = nil) {
         self.name = name
         if type.hasSuffix("?") || type.hasSuffix("!") {
             self.isNullable = true
@@ -93,13 +92,17 @@ struct VarInfo {
             self.optional = false
             self.isNullable = false
         }
+        var correctCaseKey: String
         if upperCase {
             let n = name as NSString
-            self.key = key ?? n.substring(to: 1).capitalized + n.substring(from: 1)
+            correctCaseKey = in_key ?? n.substring(to: 1).capitalized + n.substring(from: 1)
         } else if ignoreCase {
-            self.key = (key ?? name).lowercased()
+            correctCaseKey = (in_key ?? name).lowercased()
         } else {
-            self.key = key ?? name
+            correctCaseKey = in_key ?? name
+        }
+        self.key = correctCaseKey.components(separatedBy: ",").map {
+            $0.trimmingCharacters(in: CharacterSet.whitespaces)
         }
         self.defaultValue = defaultValue
     }
@@ -178,8 +181,38 @@ struct VarInfo {
             return v
         }
     }
-    
-    func initFromKey(_ aKey: String) {
+
+    func generateInit(from keys: [String]) {
+        let aKey = keys.first!
+        let restOfKeys: [String]? = (keys.count > 1 ? Array(keys.dropFirst(1)) : nil)
+        let comp = aKey.components(separatedBy: "/")
+        for (idx, aComp) in comp.enumerated() {
+            if idx == comp.count - 1 {
+                initFrom(key: aComp, rest: restOfKeys)
+                for _ in 0 ..< idx {
+                    if let restOfKeys = restOfKeys {
+                        output.append("\t\t} else {")
+                        generateInit(from: restOfKeys)
+                        output.append("\t\t}")
+                    } else if let def = defaultValue {
+                        output.append("\t\t} else { \(name) = \(def) }")
+                    } else if !optional {
+                        output.append("\t\t} else { return nil }")
+                    } else {
+                        output.append("\t\t} else { \(name) = nil }")
+                    }
+                }
+            } else {
+                if ignoreCase {
+                    output.append("\t\tif let dict = Mapper.lowercased(dict[\"\(aComp)\"] as? [String: Any]) {")
+                } else {
+                    output.append("\t\tif let dict = dict[\"\(aComp)\"] as? [String: Any] {")
+                }
+            }
+        }
+    }
+
+    func initFrom(key aKey: String, rest: [String]?) {
         var mapStatement = "Mapper.map(dict[\"\(aKey)\"])"
         if isEnum {
             output.append("if let v: \(rawType!) = \(mapStatement) {")
@@ -193,8 +226,12 @@ struct VarInfo {
         
         output.append("if let v: \(type) = \(mapStatement) \(whereStatement){ ")
         output.append("\(name) = v")
-        
-        if let def = defaultValue {
+
+        if let rest = rest {
+            output.append("} else {")
+            generateInit(from: rest)
+            output.append("}")
+        } else if let def = defaultValue {
             output.append("} else { \(name) = \(def) }")
         } else if !optional {
             output.append("} else { return nil }")
@@ -239,27 +276,7 @@ func createFunctions() {
     }
     
     for variable in variables {
-        let comp = variable.key.components(separatedBy: "/")
-        for (idx, aKey) in comp.enumerated() {
-            if idx == comp.count - 1 {
-                variable.initFromKey(aKey)
-                for _ in 0 ..< idx {
-                    if let def = variable.defaultValue {
-                        output.append("\t\t} else { \(variable.name) = \(def) }")
-                    } else if !variable.optional {
-                        output.append("\t\t} else { return nil }")
-                    } else {
-                        output.append("\t\t} else { \(variable.name) = nil }")
-                    }
-                }
-            } else {
-                if ignoreCase {
-                    output.append("\t\tif let dict = Mapper.lowercased(dict[\"\(aKey)\"] as? [String: Any]) {")
-                } else {
-                    output.append("\t\tif let dict = dict[\"\(aKey)\"] as? [String: Any] {")
-                }
-            }
-        }
+        variable.generateInit(from: variable.key)
     }
     
     if !override.isEmpty {
@@ -284,7 +301,7 @@ func createFunctions() {
     }
     
     for variable in variables {
-        let keys = variable.key.components(separatedBy: "/")
+        let keys = variable.key.first!.components(separatedBy: "/")
         for (idx, key) in keys.enumerated() {
             let dName = (idx == 0) ? "dict" : "dict\(idx)"
             if idx == keys.count - 1 {
@@ -386,7 +403,7 @@ var inClass = false
 let classRegex = Regex("(class|struct) +([^ :]+)[ :]+(.*)\\{ *$", options: [.anchorsMatchLines])
 let endBrace = Regex("\\}")
 let openBrace = Regex("\\{")
-let varRegex = Regex("(?!var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *(?://! *\"([^ ]+)\")?")
+let varRegex = Regex("(?!var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *(?://! *\"([^\"]+)\")?")
 let dictRegex = Regex("(?!var|let) +([^: ]+?) *: *(\\[.*?:.*?\\][!?]) *(?:= *([^ ]+))? *(?://! *\"([^ ]+)\")?")
 let ignoreRegex = Regex("(.*)//! *ignore", options: [.caseInsensitive])
 let awakeRegex = Regex("//! *awake", options: [.caseInsensitive])

@@ -18,14 +18,14 @@ enum What: String {
 @objc public class Classy: NSObject, DictionaryConvertible, NSCoding, NSCopying {
     var powerMode: Int
     let x: Int! = nil
-    let y: String? = "as" //! "Arg"
+    let y: String? = "as" //! "Arg, y"
     let why: What?
     let u: URL?
     let a: [Int]?
     let cx: Classx?
-    let nested: CGFloat? //! "outer/inner"
+    let nested: CGFloat? //! "outer/inner, x/y"
     let d: [String: String]?
-    let d2: [String: AnyObject]?
+    let d2: [String: Any]?
     var derived: String = "" //! ignore
     //! awake
 
