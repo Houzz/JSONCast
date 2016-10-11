@@ -20,7 +20,7 @@ enum What: String {
     let x: Int! = nil
     let y: String? = "as" //! "Arg"
     let why: What?
-    let u: NSURL?
+    let u: URL?
     let a: [Int]?
     let cx: Classx?
     let nested: CGFloat? //! "outer/inner"

@@ -369,6 +369,7 @@
 				TargetAttributes = {
 					E46F923F1CF04F6B00BFE4AF = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
 					};
 					E46F92611CF07BBB00BFE4AF = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -376,9 +377,11 @@
 					};
 					E46F92951CF0802F00BFE4AF = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
 					};
 					E46F92A81CF0802F00BFE4AF = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
 						TestTargetID = E46F92951CF0802F00BFE4AF;
 					};
 				};
@@ -567,6 +570,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_VERSION = 3.0;
 			};
 			name = "Distribution Ad Hoc";
 		};
@@ -574,6 +578,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = "Distribution Ad Hoc";
 		};
@@ -672,6 +677,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.houzz.CastingApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 3.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Distribution Ad Hoc";
@@ -687,6 +693,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.houzz.CastingAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CastingApp.app/CastingApp";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -734,6 +741,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -771,6 +779,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -778,6 +787,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -785,6 +795,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -913,6 +924,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.houzz.CastingApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -928,6 +940,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.houzz.CastingApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 3.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -943,6 +956,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.houzz.CastingAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CastingApp.app/CastingApp";
 			};
 			name = Debug;
@@ -958,6 +972,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.houzz.CastingAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CastingApp.app/CastingApp";
 				VALIDATE_PRODUCT = YES;
 			};

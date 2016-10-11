@@ -3,6 +3,7 @@
 
 import Foundation
 
+
 var classInheritence: [String]?
 var className: String?
 var output = [String]()
@@ -18,30 +19,30 @@ var ignoreCase = false
 var doImport = true
 
 let encodeMap = [
-    "Bool": ("aCoder.encodeBool(%@, forKey: \"%@\")", "aDecoder.decodeBoolForKey(\"%@\")"),
-    "Float": ("aCoder.encodeFloat(%@, forKey: \"%@\")", "aDecoder.decodeFloatForKey(\"%@\")"),
-    "Double": ("aCoder.encodeDouble(%@, forKey: \"%@\")", "aDecoder.decodeDoubleForKey(\"%@\")"),
-    "CGFloat": ("aCoder.encodeDouble(Double(%@), forKey: \"%@\")", "CGFloat(aDecoder.decodeDoubleForKey(\"%@\"))"),
-    "Int": ("aCoder.encodeInteger(%@, forKey: \"%@\")", "aDecoder.decodeIntegerForKey(\"%@\")"),
-    "UInt": ("aCoder.encodeInteger(Int(%@), forKey: \"%@\")", "UInt(aDecoder.decodeIntegerForKey(\"%@\"))")
+    "Bool": ("aCoder.encode(Bool(%@), forKey: \"%@\")", "aDecoder.decodeBool(forKey:\"%@\")"),
+    "Float": ("aCoder.encode(Float(%@), forKey: \"%@\")", "aDecoder.decodeFloat(forKey:\"%@\")"),
+    "Double": ("aCoder.encode(Double(%@), forKey: \"%@\")", "aDecoder.decodeDouble(forKey:\"%@\")"),
+    "CGFloat": ("aCoder.encode(Double(%@), forKey: \"%@\")", "CGFloat(aDecoder.decodeDouble(forKey:\"%@\"))"),
+    "Int": ("aCoder.encode(Int(%@), forKey: \"%@\")", "aDecoder.decodeInteger(forKey:\"%@\")"),
+    "UInt": ("aCoder.encode(Int(%@), forKey: \"%@\")", "UInt(aDecoder.decodeInteger(forKey:\"%@\"))")
 ]
 
 class Regex {
     private let expression: NSRegularExpression
     private var match: NSTextCheckingResult?
-
-    init(_ pattern: String, options: NSRegularExpressionOptions = []) {
+    
+    init(_ pattern: String, options: NSRegularExpression.Options = []) {
         self.expression = try! NSRegularExpression(pattern: pattern, options: options)
     }
-
-    func matchGroups(input: String) -> [String?]? {
-        match = expression.firstMatchInString(input, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
+    
+    func matchGroups(_ input: String) -> [String?]? {
+        match = expression.firstMatch(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
         if let match = match {
             var captures = [String?]()
             for group in 0 ..< match.numberOfRanges {
-                let r = match.rangeAtIndex(group)
+                let r = match.rangeAt(group)
                 if r.location != NSNotFound {
-                    let stringMatch = (input as NSString).substringWithRange(match.rangeAtIndex(group))
+                    let stringMatch = (input as NSString).substring(with: match.rangeAt(group))
                     captures.append(stringMatch)
                 } else {
                     captures.append(nil)
@@ -52,33 +53,25 @@ class Regex {
             return nil
         }
     }
-
-    func match(input: String) -> Bool {
-        match = expression.firstMatchInString(input, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
+    
+    func match(_ input: String) -> Bool {
+        match = expression.firstMatch(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
         return match != nil
     }
-
-    func replace(input: String, with template: String) -> String {
-        return expression.stringByReplacingMatchesInString(input, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count), withTemplate: template)
+    
+    func replace(_ input: String, with template: String) -> String {
+        return expression.stringByReplacingMatches(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count), withTemplate: template)
     }
-
-    func numberOfMatchesIn(input: String) -> Int {
-        return expression.matchesInString(input, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count)).count
+    
+    func numberOfMatchesIn(_ input: String) -> Int {
+        return expression.matches(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count)).count
     }
 }
 
 extension String {
-    func replace(regex: Regex, with template: String) -> String {
+    func replace(_ regex: Regex, with template: String) -> String {
         return regex.replace(self, with: template)
     }
-}
-
-infix operator ~ { associativity left precedence 150 }
-func ~(left: Regex, right: String) -> Bool {
-    return left.match(right)
-}
-func ~(left: Regex, right: String) -> [String?]? {
-    return left.matchGroups(right)
 }
 
 struct VarInfo {
@@ -88,12 +81,12 @@ struct VarInfo {
     let key: String
     var optional: Bool
     let isNullable: Bool
-
+    
     init(name: String, type: String, defaultValue: String? = nil, key: String? = nil) {
         self.name = name
         if type.hasSuffix("?") || type.hasSuffix("!") {
             self.isNullable = true
-            self.type = type.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "!?"))
+            self.type = type.trimmingCharacters(in: CharacterSet(charactersIn: "!?"))
             self.optional = type.hasSuffix("?")
         } else {
             self.type = type
@@ -102,27 +95,27 @@ struct VarInfo {
         }
         if upperCase {
             let n = name as NSString
-            self.key = key ?? n.substringToIndex(1).capitalizedString + n.substringFromIndex(1)
+            self.key = key ?? n.substring(to: 1).capitalized + n.substring(from: 1)
         } else if ignoreCase {
-            self.key = (key ?? name).lowercaseString
+            self.key = (key ?? name).lowercased()
         } else {
             self.key = key ?? name
         }
         self.defaultValue = defaultValue
     }
-
+    
     var isEnum: Bool {
         get {
             return enumMapping[type] != nil
         }
     }
-
+    
     var rawType: String? {
         get {
             return enumMapping[type]
         }
     }
-
+    
     var encodeCall: String {
         get {
             var ret = ""
@@ -132,7 +125,7 @@ struct VarInfo {
                 vv = "v"
                 ret += "if let v = \(name) {\n"
             }
-
+            
             if let rawType = enumMapping[vtype] {
                 vv = "\(vv).rawValue"
                 vtype = rawType
@@ -140,40 +133,40 @@ struct VarInfo {
             if let f = encodeMap[vtype] {
                 ret += String(format: f.0, vv, name)
             } else {
-                ret += "aCoder.encodeObject(\(vv), forKey: \"\(name)\")"
+                ret += "aCoder.encode(\(vv), forKey: \"\(name)\")"
             }
-
+            
             if optional {
                 ret += "\n\t\t}"
             }
-
+            
             return ret
         }
     }
-
+    
     var decodeCall: String {
         get {
             var vtype = type
             if let rawType = enumMapping[vtype] {
                 vtype = rawType
             }
-
+            
             var v: String
             if let f = encodeMap[vtype] {
                 let enc = String(format: f.1, name)
-                v = "\t\tif aDecoder.containsValueForKey(\"\(name)\") { let v = \(enc)"
+                v = "\t\tif aDecoder.containsValue(forKey:\"\(name)\") { let v = \(enc)"
             } else {
-                v = "if let v = aDecoder.decodeObjectForKey(\"\(name)\") as? \(vtype) {"
+                v = "if let v = aDecoder.decodeObject(forKey:\"\(name)\") as? \(vtype) {"
             }
-
+            
             if vtype != type {
                 v += "\n\t\t\t\(name) = \(type)(rawValue: v)!"
             } else {
                 v += "\n\t\t\t\(name) = v"
             }
-
+            
             v += "\n\t\t}"
-
+            
             if let def = defaultValue {
                 v += " else { \(name) = \(def) }"
             } else if optional {
@@ -181,26 +174,26 @@ struct VarInfo {
             } else {
                 v += " else { return nil }"
             }
-
+            
             return v
         }
     }
-
-    func initFromKey(aKey: String) {
+    
+    func initFromKey(_ aKey: String) {
         var mapStatement = "Mapper.map(dict[\"\(aKey)\"])"
         if isEnum {
             output.append("if let v: \(rawType!) = \(mapStatement) {")
             mapStatement = "\(type)(rawValue: v)"
         }
-
+        
         var whereStatement = ""
         if nullEmptyString && type == "String" {
-            whereStatement = "where !v.isEmpty "
+            whereStatement = ", !v.isEmpty "
         }
-
+        
         output.append("if let v: \(type) = \(mapStatement) \(whereStatement){ ")
         output.append("\(name) = v")
-
+        
         if let def = defaultValue {
             output.append("} else { \(name) = \(def) }")
         } else if !optional {
@@ -210,7 +203,7 @@ struct VarInfo {
         } else {
             output.append("}")
         }
-
+        
         if isEnum {
             if let def = defaultValue {
                 output.append("} else { \(name) = \(def) }")
@@ -234,20 +227,20 @@ func createFunctions() {
     if !classInheritence!.contains("DictionaryConvertible") {
         override = "override"
     }
-
+    
     // init
     let reqStr = isStruct ? "" : "required"
-
+    
     if ignoreCase {
-        output.append("\(reqStr) \(classAccess) init?(dictionary unknownCaseDict: [String: AnyObject]) {")
-        output.append("        guard let dict = Mapper.lowercaseDictionary(unknownCaseDict) else { return nil }")
+        output.append("\(reqStr) \(classAccess) init?(dictionary unknownCaseDict: [String: Any]) {")
+        output.append("        guard let dict = Mapper.lowercased(unknownCaseDict) else { return nil }")
     } else {
-        output.append("\(reqStr) \(classAccess) init?(dictionary dict: [String: AnyObject]) {")
+        output.append("\(reqStr) \(classAccess) init?(dictionary dict: [String: Any]) {")
     }
-
+    
     for variable in variables {
-        let comp = variable.key.componentsSeparatedByString("/")
-        for (idx, aKey) in comp.enumerate() {
+        let comp = variable.key.components(separatedBy: "/")
+        for (idx, aKey) in comp.enumerated() {
             if idx == comp.count - 1 {
                 variable.initFromKey(aKey)
                 for _ in 0 ..< idx {
@@ -261,45 +254,45 @@ func createFunctions() {
                 }
             } else {
                 if ignoreCase {
-                    output.append("\t\tif let dict = Mapper.lowercaseDictionary(dict[\"\(aKey)\"] as? [String: AnyObject]) {")
+                    output.append("\t\tif let dict = Mapper.lowercased(dict[\"\(aKey)\"] as? [String: Any]) {")
                 } else {
-                    output.append("\t\tif let dict = dict[\"\(aKey)\"] as? [String: AnyObject] {")
+                    output.append("\t\tif let dict = dict[\"\(aKey)\"] as? [String: Any] {")
                 }
             }
         }
     }
-
+    
     if !override.isEmpty {
         output.append("\t\tsuper.init(dictionary: dict)")
     }
-
+    
     if callAwake {
-        if classInheritence!.indexOf("DictionaryConvertible") > 0 {
+        if classInheritence!.contains("DictionaryConvertible") {
             output.append("\t\tsuper.init()")
         }
-        output.append("\t\tif !awakeWithDictionary(dict) { return nil }")
+        output.append("\t\tif !awake(with: dict) { return nil }")
     }
-
+    
     output.append("\t}")
-
+    
     // dictionaryRepresentation()
-    output.append("\t\(override) \(classAccess) func dictionaryRepresentation() -> [String: AnyObject] {")
+    output.append("\t\(override) \(classAccess) func dictionaryRepresentation() -> [String: Any] {")
     if override.isEmpty {
-        output.append("\t\tvar dict = [String: AnyObject]()")
+        output.append("\t\tvar dict = [String: Any]()")
     } else {
         output.append("\t\tvar dict = super.dictionaryRepresentation()")
     }
-
+    
     for variable in variables {
-        let keys = variable.key.componentsSeparatedByString("/")
-        for (idx, key) in keys.enumerate() {
+        let keys = variable.key.components(separatedBy: "/")
+        for (idx, key) in keys.enumerated() {
             let dName = (idx == 0) ? "dict" : "dict\(idx)"
             if idx == keys.count - 1 {
                 output.append("\t\tif let x = Mapper.unmap(\(variable.name)) {")
                 output.append("\t\t\t\(dName)[\"\(key)\"] = x")
                 output.append("\t\t}")
-
-                for idx2 in(0 ..< idx).reverse() {
+                
+                for idx2 in(0 ..< idx).reversed() {
                     let idx3 = idx2 + 1
                     let dName = (idx2 == 0) ? "dict" : "dict\(idx2)"
                     let prevName = "dict\(idx3)"
@@ -310,47 +303,47 @@ func createFunctions() {
                 let nidx = idx + 1
                 let nextName = (idx == 1) ? "dict" : "dict\(nidx)"
                 output.append("\t\tdo {")
-                output.append("\t\t\t var \(nextName) = \(dName)[\"\(key)\"] as? [String: AnyObject] ?? [String: AnyObject]()")
+                output.append("\t\t\t var \(nextName) = \(dName)[\"\(key)\"] as? [String: Any] ?? [String: Any]()")
             }
         }
     }
     output.append("\t\treturn dict")
     output.append("\t}")
-
+    
     // nscoding
     if (nscoding || classInheritence!.contains("NSCoding")) && !isStruct {
         let codingOverride = !classInheritence!.contains("NSCoding")
         let codingOverrideString = codingOverride ? "override" : ""
-
+        
         // init(coder:)
         output.append("\trequired \(classAccess) init?(coder aDecoder: NSCoder) {")
-
+        
         for variable in variables {
             output.append(variable.decodeCall)
         }
-
+        
         if codingOverride {
             output.append("\t\tsuper.init(coder:aDecoder)")
         }
         output.append("\t}")
-
+        
         // encodeWithCoder
-        output.append("    \(classAccess) \(codingOverrideString) func encodeWithCoder(aCoder: NSCoder) {")
+        output.append("    \(classAccess) \(codingOverrideString) func encode(with aCoder: NSCoder) {")
         if codingOverride {
-            output.append("\t\tsuper.encodeWithCoder(aCoder)")
+            output.append("\t\tsuper.encode(with: aCoder)")
         }
-
+        
         for variable in variables {
             output.append(variable.encodeCall)
         }
-
+        
         output.append("\t}")
-
-//         NSCopying
-
+        
+        //         NSCopying
+        
         if classInheritence!.contains("NSCopying") && !isStruct {
-            output.append("\t\(classAccess) func copyWithZone(zone: NSZone) -> AnyObject {")
-            output.append("\t\treturn NSKeyedUnarchiver.unarchiveObjectWithData(NSKeyedArchiver.archivedDataWithRootObject(self))!")
+            output.append("\t\(classAccess) func copy(with zone: NSZone? = nil) -> Any {")
+            output.append("\t\treturn NSKeyedUnarchiver.unarchiveObject(with: NSKeyedArchiver.archivedData(withRootObject: self))!")
             output.append("\t}")
         }
     }
@@ -359,7 +352,7 @@ func createFunctions() {
 var inputFile: String? = nil
 var outputFile: String? = nil
 
-for (idx, arg) in Process.arguments.enumerate() {
+for (idx, arg) in CommandLine.arguments.enumerated() {
     if idx == 0 {
         continue
     }
@@ -367,17 +360,17 @@ for (idx, arg) in Process.arguments.enumerate() {
     case "-c", "-upper", "-uppercase":
         upperCase = true
         ignoreCase = false
-
+        
     case "-n", "-null", "-nullempty":
         nullEmptyString = true
-
+        
     case "-i", "-ignore", "-ignorecase":
         upperCase = false
         ignoreCase = true
-
+        
     case "-m", "-noimport":
         doImport = false
-
+        
     default:
         if inputFile == nil {
             inputFile = arg
@@ -387,17 +380,17 @@ for (idx, arg) in Process.arguments.enumerate() {
     }
 }
 
-let input = try! String(contentsOfFile: inputFile!).componentsSeparatedByString("\n")
+let input = try! String(contentsOfFile: inputFile!).components(separatedBy: "\n")
 
 var inClass = false
-let classRegex = Regex("(class|struct) +([^ :]+)[ :]+(.*)\\{ *$", options: [.AnchorsMatchLines])
+let classRegex = Regex("(class|struct) +([^ :]+)[ :]+(.*)\\{ *$", options: [.anchorsMatchLines])
 let endBrace = Regex("\\}")
 let openBrace = Regex("\\{")
 let varRegex = Regex("(?!var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *(?://! *\"([^ ]+)\")?")
 let dictRegex = Regex("(?!var|let) +([^: ]+?) *: *(\\[.*?:.*?\\][!?]) *(?:= *([^ ]+))? *(?://! *\"([^ ]+)\")?")
-let ignoreRegex = Regex("(.*)//! *ignore", options: [.CaseInsensitive])
-let awakeRegex = Regex("//! *awake", options: [.CaseInsensitive])
-let codingRegex = Regex("//! *nscoding", options: [.CaseInsensitive])
+let ignoreRegex = Regex("(.*)//! *ignore", options: [.caseInsensitive])
+let awakeRegex = Regex("//! *awake", options: [.caseInsensitive])
+let codingRegex = Regex("//! *nscoding", options: [.caseInsensitive])
 let enumRegex = Regex("enum ([^ :]+)[ :]+([^ ]+)")
 let accessRegex = Regex("(public|private|internal)")
 var braceLevel = 0
@@ -407,7 +400,7 @@ var commentRegex = Regex("^//.*$")
 
 output.append("// ================================================================== ")
 output.append("//")
-let last = inputFile!.componentsSeparatedByString("/").last!
+let last = inputFile!.components(separatedBy: "/").last!
 output.append("// Generated from \(last)")
 output.append("//")
 output.append("// DO NOT EDIT THIS FILE. GENERATED FILE, EDITS WILL BE OVERWRITTEN")
@@ -416,16 +409,16 @@ output.append("// ==============================================================
 
 for line in input {
     var outline = line
-
+    
     let priorBraceLevel = braceLevel
     braceLevel += openBrace.numberOfMatchesIn(outline) - endBrace.numberOfMatchesIn(outline)
-
+    
     if priorBraceLevel == 0 && !didImportCast {
-        if let matches: [String?] = importRegex ~ line {
+        if let matches: [String?] = importRegex.matchGroups(line) {
             if !inImportBlock {
                 inImportBlock = true
             }
-            if let framework = matches[1] where framework.hasPrefix("Cast") {
+            if let framework = matches[1] , framework.hasPrefix("Cast") {
                 didImportCast = true
             }
         } else if inImportBlock {
@@ -444,7 +437,7 @@ for line in input {
             }
         }
     }
-
+    
     if priorBraceLevel <= 1, let matches = enumRegex.matchGroups(line) {
         guard let name = matches[1] else {
             fatalError()
@@ -459,18 +452,18 @@ for line in input {
                 inClass = false
                 createFunctions()
             } else if priorBraceLevel == 1 {
-                if ignoreRegex ~ line {
+                if ignoreRegex.match(line) {
                     outline = line.replace(ignoreRegex, with: "$1")
-                } else if awakeRegex ~ line {
+                } else if awakeRegex.match(line) {
                     callAwake = true
                     continue
-                } else if codingRegex ~ line {
+                } else if codingRegex.match(line) {
                     nscoding = true && !isStruct
                     continue
-                } else if let matches: [String?] = dictRegex ~ line {
+                } else if let matches: [String?] = dictRegex.matchGroups(line) {
                     variables.append(VarInfo(name: matches[1]!, type: matches[2]!, defaultValue: matches[3], key: matches[4]))
                     outline = line.replace(dictRegex, with: " $1: $2")
-                } else if let matches: [String?] = varRegex ~ line {
+                } else if let matches: [String?] = varRegex.matchGroups(line) {
                     variables.append(VarInfo(name: matches[1]!, type: matches[2]!, defaultValue: matches[3], key: matches[4]))
                     outline = line.replace(varRegex, with: " $1: $2")
                 }
@@ -478,12 +471,12 @@ for line in input {
         } else if priorBraceLevel == 0 {
             if let matches = classRegex.matchGroups(line) {
                 inClass = true
-                classInheritence = matches[3]?.stringByReplacingOccurrencesOfString(" ", withString: "").componentsSeparatedByString(",")
+                classInheritence = matches[3]?.replacingOccurrences(of: " ", with: "").components(separatedBy: ",")
                 className = matches[2]
                 variables = [VarInfo]()
                 callAwake = false
                 isStruct = (matches[1] == "struct")
-                if let matches: [String?] = accessRegex ~ line {
+                if let matches: [String?] = accessRegex.matchGroups(line) {
                     classAccess = matches[1] ?? "internal"
                 } else {
                     classAccess = "internal"
@@ -492,12 +485,12 @@ for line in input {
             }
         }
     }
-
-    if commentRegex ~ line {
+    
+    if commentRegex.match(line) {
         continue
     }
-
+    
     output.append(outline)
 }
 
-try! output.joinWithSeparator("\n").writeToFile(outputFile!, atomically: true, encoding: NSUTF8StringEncoding)
+try! output.joined(separator: "\n").write(toFile: outputFile!, atomically: true, encoding: String.Encoding.utf8)

@@ -60,7 +60,7 @@ class CastingAppTests: XCTestCase {
         XCTAssert(b.d2!["k2"] as! Int == 3)
         let dict2 = b.dictionaryRepresentation()
         XCTAssert(dict2["x"] as! Int == 3)
-        XCTAssert((dict2["u"] as! NSURL) == NSURL(string: "http://houzz.com"))
+        XCTAssert((dict2["u"] as! URL) == URL(string: "http://houzz.com"))
 
         let d = b.copy() as! Classz
         XCTAssert(b.x == d.x)

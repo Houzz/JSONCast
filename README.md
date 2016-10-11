@@ -10,6 +10,10 @@ Easily create classes from parsed JSON and conform to `NSCopying` and `NSEncodin
 - Automatically map JSON keys to properties based on property names, or easily add custom key mappings.
 - Supports required and optional JSON keys
 
+## Swift 3
+
+JSON cast is ported to Swift 3, both the code it generates is Swift 3 and it is expecting the Xcode 8 runtime to be present. If you are still using Swift 2, there is a Swift 2 branch, though beware that this branch is not maintained, new developments will only go in the master branch.
+
 ## Basic Usage
 
 Create a `.cast` file with your properties as follows:
@@ -57,16 +61,16 @@ Now try adding a `.cast` file to your project and it should compile.
 The cast scripts accepts the following command line options:
 
 __-c__  or __-uppercase__  
-Capitalize the key names, so a property named "age" will use the key "Age". Without the `-c`, key names are the same as property names, that is the property "age" will use the key "age." 
+Capitalize the key names, so a property named "age" will use the key "Age". Without the -c key names are the same as property names, that is the property "age" will use the key "age." 
 
 __-i__  or __-ignorecase__  
-Case insensitive keys. The keys in the dictionary are case insensitive, so the property "age" will match the key "Age", "AGE" or any case variation.
+Case insensitve keys. The keys in the dictionary are case insensitve, so the property "age" will match the key "Age" or "AGE" or any case variation.
 
 __-n__  or __-null__  
-If the `-n` command line option is specified, empty strings in the JSON (e.g. `"a": ""`) will be mapped to nil `String?` values. Without it, it will map to empty strings.
+If the -n command line option is specified, empty strings in the JSON (e.g. `"a": ""`) will be mapped to nil String? values. Without it the will map to empty strings.
 
-__-m__ or __-noimport__  
-Don't add an `import Cast` statement to the generated files. Useful if you chose to integrate by adding the `Mapper.swift` file to your project instead of usig the Cast framework.
+__-m__ or __-noimpoert__  
+Don't add an import Cast statement to the generated files. Useful if you chose to integrate by adding the mapper.swift file to your project instead of usig the cast framework
 
 ## Advanced Usage
 
@@ -155,6 +159,11 @@ extension Mapper {
 You can extend `Mapper` to support any new custom type you have. By default, `Mapper` supports any type conforming to `DictionaryConvertible`, so classes you defined in `.cast` files will automatically work as property types in other classes.
 
 
+=======
+### Awake
+
+
+By adding a `//! awake` comment to the class / struct decleration the init will call an `awake(with dictionary: [String: AnyObject]) -> Bool` functionary passing it the dictionary that was used to initialize the object. If the function returns true the init will succeed, if it returns false the init will fail. You can use the awakeFromDictionary method to perform last value validations after the dictionary is parsed as well as compute any derived value you need or do any post processing after the dictionary is read.
 
 ### `awakeWithDictionary`
 

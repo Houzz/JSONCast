@@ -9,43 +9,43 @@ import Foundation
 import CoreGraphics
 
 public protocol DictionaryConvertible {
-    init?(dictionary: [String: AnyObject])
-    func dictionaryRepresentation() -> [String: AnyObject]
+    init?(dictionary: [String: Any])
+    func dictionaryRepresentation() -> [String: Any]
 }
 
 public extension DictionaryConvertible {
-    init?(json: NSData) {
-        guard let dict = (try? NSJSONSerialization.JSONObjectWithData(json, options: NSJSONReadingOptions(rawValue: 0))) as? [String: AnyObject] else {
+    init?(json: Data) {
+        guard let dict = (try? JSONSerialization.jsonObject(with: json, options: JSONSerialization.ReadingOptions(rawValue: 0))) as? [String: Any] else {
             return nil
         }
         self.init(dictionary: dict)
     }
-
+    
     init?(json: String) {
-        guard let dict = (try? NSJSONSerialization.JSONObjectWithData(json.dataUsingEncoding(NSUTF8StringEncoding)!, options: NSJSONReadingOptions(rawValue: 0))) as? [String: AnyObject] else {
+        guard let dict = (try? JSONSerialization.jsonObject(with: json.data(using: String.Encoding.utf8)!, options: JSONSerialization.ReadingOptions(rawValue: 0))) as? [String: Any] else {
             return nil
         }
         self.init(dictionary: dict)
     }
-
-    func awakeWithDictionary(dict: [String: AnyObject]) -> Bool {
+    
+    func awake(with dictionary: [String: Any]) -> Bool {
         return true
     }
 }
 
 public protocol BasicType {
-    static func fromDictionaryValue(object: AnyObject) -> Self
+    static func from(dictionaryValue object: Any) -> Self
 }
 
 extension Int: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> Int {
+    public static func from(dictionaryValue object: Any) -> Int {
         switch object {
         case let x as Int:
             return x
-
+            
         case let x as String:
             return Int(x)!
-
+            
         default:
             return 0
         }
@@ -53,14 +53,14 @@ extension Int: BasicType {
 }
 
 extension UInt: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> UInt {
+    public static func from(dictionaryValue object: Any) -> UInt {
         switch object {
         case let x as UInt:
             return x
-
+            
         case let x as String:
             return UInt(x)!
-
+            
         default:
             return 0
         }
@@ -68,14 +68,14 @@ extension UInt: BasicType {
 }
 
 extension CGFloat: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> CGFloat {
+    public static func from(dictionaryValue object: Any) -> CGFloat {
         switch object {
         case let x as CGFloat:
             return x
-
+            
         case let x as String:
             return CGFloat(Double(x)!)
-
+            
         default:
             return 0
         }
@@ -83,14 +83,14 @@ extension CGFloat: BasicType {
 }
 
 extension Double: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> Double {
+    public static func from(dictionaryValue object: Any) -> Double {
         switch object {
         case let x as Double:
             return x
-
+            
         case let x as String:
             return Double(x)!
-
+            
         default:
             return 0
         }
@@ -98,14 +98,14 @@ extension Double: BasicType {
 }
 
 extension Float: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> Float {
+    public static func from(dictionaryValue object: Any) -> Float {
         switch object {
         case let x as Float:
             return x
-
+            
         case let x as String:
             return Float(x)!
-
+            
         default:
             return 0
         }
@@ -113,14 +113,14 @@ extension Float: BasicType {
 }
 
 extension Bool: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> Bool {
+    public static func from(dictionaryValue object: Any) -> Bool {
         switch object {
         case let x as Bool:
             return x
-
+            
         case let x as NSString:
             return x.boolValue
-
+            
         default:
             return false
         }
@@ -128,21 +128,21 @@ extension Bool: BasicType {
 }
 
 extension String: BasicType {
-    public static func fromDictionaryValue(object: AnyObject) -> String {
+    public static func from(dictionaryValue object: Any) -> String {
         switch object {
         case let x as String:
             return x
-
+            
         default:
             return ""
         }
     }
 }
 
-public class Mapper {
-    public class func map<V: DictionaryConvertible>(object: AnyObject?) -> [V]? {
+open class Mapper {
+    open class func map<V: DictionaryConvertible>(_ object: Any?) -> [V]? {
         switch object {
-        case let dictArray as [[String: AnyObject]]:
+        case let dictArray as [[String: Any]]:
             var items = [V]()
             for item in dictArray {
                 if let x = V.init(dictionary: item) {
@@ -150,149 +150,149 @@ public class Mapper {
                 }
             }
             return items
-
+            
         default:
             return nil
         }
     }
-
-    public class func map<V: DictionaryConvertible>(object: AnyObject?) -> V? {
+    
+    open class func map<V: DictionaryConvertible>(_ object: Any?) -> V? {
         switch object {
-        case let item as [String: AnyObject]:
+        case let item as [String: Any]:
             return V.init(dictionary: item)
-
+            
         default:
             return nil
         }
     }
-
-    public class func map(object: AnyObject?) -> [String: AnyObject]? {
+    
+    open class func map(_ object: Any?) -> [String: Any]? {
         switch object {
-        case let d as [String: AnyObject]:
+        case let d as [String: Any]:
             return d
-
+            
         default:
             return nil
         }
     }
-
-    public class func map(object: AnyObject?) -> [String: String]? {
+    
+    open class func map(_ object: Any?) -> [String: String]? {
         switch object {
         case let d as [String: String]:
             return d
-
+            
         default:
             return nil
         }
     }
-
-    public class func map<V: BasicType>(object: AnyObject?) -> [V]? {
+    
+    open class func map<V: BasicType>(_ object: Any?) -> [V]? {
         switch object {
-        case let array as [AnyObject]:
+        case let array as [Any]:
             var items = [V]()
             for item in array {
-                items.append(V.fromDictionaryValue(item))
+                items.append(V.from(dictionaryValue: item))
             }
             return items
-
+            
         default:
             return nil
         }
     }
-
-    public class func map(object: AnyObject?) -> CGFloat? {
+    
+    open class func map(_ object: Any?) -> CGFloat? {
         switch object {
         case let x as CGFloat:
             return x
-
+            
         case let str as String:
             return CGFloat(Double(str)!)
-
+            
         default:
             return nil
         }
     }
-
-    public class func map(object: AnyObject?) -> Double? {
+    
+    open class func map(_ object: Any?) -> Double? {
         switch object {
         case let x as Double:
             return x
-
+            
         case let str as String:
             return Double(str)
-
+            
         default:
             return nil
         }
     }
-
-    public class func map(object: AnyObject?) -> Int? {
+    
+    open class func map(_ object: Any?) -> Int? {
         switch object {
         case let x as Int:
             return x
-
+            
         case let str as String:
             return Int(str)
-
+            
         default:
             return nil
         }
     }
-
-    public class func map(object: AnyObject?) -> UInt? {
+    
+    open class func map(_ object: Any?) -> UInt? {
         switch object {
         case let x as UInt:
             return x
-
+            
         case let str as String:
             return UInt(str)
-
+            
         default:
             return nil
         }
     }
-
-    public class func map(object: AnyObject?) -> String? {
+    
+    open class func map(_ object: Any?) -> String? {
         switch object {
         case let str as String:
             return str
-
+            
         default:
             return nil
         }
     }
-
-    public class func map(object: AnyObject?) -> Bool? {
+    
+    open class func map(_ object: Any?) -> Bool? {
         switch object {
         case let x as Bool:
             return x
-
+            
         case let str as NSString:
             return str.boolValue
-
+            
         default:
             return nil
         }
     }
-
-    public class func map(object: AnyObject?) -> NSURL? {
+    
+    open class func map(_ object: Any?) -> URL? {
         switch object {
-        case let x as NSURL:
+        case let x as URL:
             return x
-
+            
         case let x as String:
-            return NSURL(string: x)
-
+            return URL(string: x)
+            
         default:
             return nil
         }
     }
-
-    public class func map(object: AnyObject?) -> [NSURL]? {
-        if let object = object as? [AnyObject] {
-            var items = [NSURL]()
+    
+    open class func map(_ object: Any?) -> [URL]? {
+        if let object = object as? [Any] {
+            var items = [URL]()
             for item in object {
-                if let u: NSURL = Mapper.map(item) {
+                if let u: URL = Mapper.map(item) {
                     items.append(u)
                 }
             }
@@ -300,19 +300,19 @@ public class Mapper {
         }
         return nil
     }
-
-    public class func unmap(object: Any?) -> AnyObject? {
-        return object as? AnyObject
+    
+    open class func unmap(_ object: Any?) -> Any? {
+        return object as Any?
     }
-
-    public class func lowercaseDictionary(dict: [String: AnyObject]?) -> [String: AnyObject]? {
+    
+    open class func lowercased(_ dict: [String: Any]?) -> [String: Any]? {
         guard let dict = dict else {
             return nil
         }
-        var outDict = [String: AnyObject]()
+        var outDict = [String: Any]()
         for (key, object) in dict {
-            outDict[key.lowercaseString] = object
+            outDict[key.lowercased()] = object
         }
-        return outDict
+        return outDict as [String: Any]
     }
 }
