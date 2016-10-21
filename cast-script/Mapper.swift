@@ -31,6 +31,10 @@ public extension DictionaryConvertible {
     func awake(with dictionary: [String: Any]) -> Bool {
         return true
     }
+
+    func read(from dictionary: [String: Any]) {
+        fatalError("read(from:) not implemented, run JSON cast with -read option")
+    }
 }
 
 public protocol BasicType {

@@ -67,6 +67,10 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-r"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "${SRCROOT}/CastingApp/Classy.cast"
             isEnabled = "YES">
          </CommandLineArgument>
