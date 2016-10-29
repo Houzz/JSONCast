@@ -24,7 +24,6 @@ enum What: String {
     let a: [Int]?
     let cx: Classx?
     let nested: CGFloat? //! "outer/inner, x/y"
-    let d: [String: String]?
     private(set) var d2: [String: Any]?
     var derived: String = "" //! ignore
     //! awake
@@ -35,7 +34,6 @@ enum What: String {
         }
     }
 }
-
 
 class Classx: NSObject, DictionaryConvertible, NSCoding {
     let name: String = ""

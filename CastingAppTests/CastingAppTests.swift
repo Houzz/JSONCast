@@ -33,7 +33,7 @@ class CastingAppTests: XCTestCase {
         XCTAssert(a.powerMode == 0)
         XCTAssert(a.u == nil)
         let dict = a.dictionaryRepresentation()
-        XCTAssert(dict["x"] as! Int == 3)
+        XCTAssert(dict["X"] as! Int == 3)
 
         let b = Classz(dictionary: [
             "X": "3",
@@ -41,12 +41,11 @@ class CastingAppTests: XCTestCase {
             "PowerMode": 3,
             "Why": "maybe",
             "U": "http://houzz.com",
-            "outer": ["inner": 4],
+            "Outer": ["Inner": 4],
             "A": ["1", 2, 3],
             "Cx": ["Name": "Joe", "Age": 15],
             "Another": "another",
-            "D": ["k": "v", "k2": "3"],
-            "D2": ["k": "v", "k2": 3]])!
+            "D2": ["K": "v", "K2": 3]])!
         XCTAssert(b.x == 3)
         XCTAssert(b.a! == [1, 2, 3])
         XCTAssert(b.cx?.age == 15)
@@ -56,11 +55,10 @@ class CastingAppTests: XCTestCase {
         XCTAssert(b.u!.absoluteString == "http://houzz.com")
         XCTAssert(b.nested! == 4)
         XCTAssert(b.another == "another")
-        XCTAssert(b.d!["k"] == "v")
-        XCTAssert(b.d2!["k2"] as! Int == 3)
+        XCTAssert(b.d2!["K2"] as! Int == 3)
         let dict2 = b.dictionaryRepresentation()
-        XCTAssert(dict2["x"] as! Int == 3)
-        XCTAssert((dict2["u"] as! URL) == URL(string: "http://houzz.com"))
+        XCTAssert(dict2["X"] as! Int == 3)
+        XCTAssert((dict2["U"] as! String) == "http://houzz.com")
 
         let d = b.copy() as! Classz
         XCTAssert(b.x == d.x)

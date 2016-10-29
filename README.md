@@ -22,7 +22,7 @@ Create a `.cast` file with your properties as follows:
 class A: DictionaryConvertible {
     let b: Int
     let c: String?
-    let d: NSURL //! "url"
+    let d: URL //! "url"
 }
 ```
 
@@ -63,8 +63,6 @@ The cast scripts accepts the following command line options:
 __-c__  or __-uppercase__  
 Capitalize the key names, so a property named "age" will use the key "Age". Without the -c key names are the same as property names, that is the property "age" will use the key "age." 
 
-__-i__  or __-ignorecase__  
-Case insensitve keys. The keys in the dictionary are case insensitve, so the property "age" will match the key "Age" or "AGE" or any case variation.
 
 __-n__  or __-null__  
 If the -n command line option is specified, empty strings in the JSON (e.g. `"a": ""`) will be mapped to nil String? values. Without it the will map to empty strings.
@@ -78,7 +76,7 @@ Don't add an import Cast statement to the generated files. Useful if you chose t
 
 The Cast file is a Swift class file that contains only class or struct declarations with their properties. When defining a class it should declare itself conforming to the `DictionaryConvertible` protocol. If it does not, the script assumes it inherits from a `DictionaryConvertible` conforming class and will call `super` on its methods.
 
-The `DictionaryConvertible` protocol defines two methods: `init?(dictionary: [String: AnyObject])` is an initializer from a dictionary, it is failable and will return nil if the dictionary does not contain all the required keys. Any property that is defined as non-optional with no default value is assumed to be required.
+The `DictionaryConvertible` protocol defines two methods: `init?(dictionary: JSONDictionary)` is an initializer from a dictionary, `JSONDictionary` is a protocol that is defined in the cast framework and that `[String: Any]` conforms to, it is failable and will return nil if the dictionary does not contain all the required keys. Any property that is defined as non-optional with no default value is assumed to be required.
 It also defines a `dictionaryRepresentation()` method that returns a dictionary representing the object. Two additional convenience initialzers are defined in `DictionaryConvertible`: `init?(json: String)` and `init?(json: NSData)` that will use `NSJSONSerialization` to convert the JSON to a dictionary and call `init?(dictionary: [String: AnyObject])`.
 
 ### Properties
@@ -89,7 +87,7 @@ Each property can have a default value which is assigned if the corresponding ke
 
 Properties that are defined as `optional` or properties that are not optional but have a default value are also treated as optional, meaning if the corresponding key is not found in the dictionary, the default value is used. Required properties will cause the init to fail and return `nil` if their corresponding key is missing from the dictionary.
 
-If you annotate a property declaration with a `//! ignore` comment, it will be ignored by the Cast script and will not be included in the `NSCoding` encoding nor `init?(dictionary: [String: AnyObject])`. Since extensions can't add stored properties to a class, you can use this to add stored properties which are derived from other properties, so are not in the dictionary.
+If you annotate a property declaration with a `//! ignore` comment, it will be ignored by the Cast script and will not be included in the `NSCoding` encoding nor `init?(dictionary: JSONDictionary)`. Since extensions can't add stored properties to a class, you can use this to add stored properties which are derived from other properties, so are not in the dictionary.
 
 Here is a summary of the different property declarations:
 
@@ -99,7 +97,7 @@ class AnObject: DictionaryConvertible {
     let b: String?
     var c: Int = 0
     let d: [Int]  //! "Other"
-    var e: NSURL? //! ignore
+    var e: URL? //! ignore
 }
 ```
 
@@ -124,20 +122,13 @@ struct AnObject: DictionaryConvertible {
 
 Adding support for other Swift enums requires adding an extension to the `Mapper` class to support the new type, see the Mapper extension section.
 
-### Mapper
+### JSONValue
 
-The generated code uses a `Mapper` class to do the mapping between dictionary values and property values. To support a new property type, add an extension to the `Mapper` class with two functions:
-
-```swift
-class func map(object: AnyObject) -> Type?
-class func unmap(object: Type) -> AnyObject?
-```
-	
-The `map` function is used when converting values in the dictionary to property values. Its given the value in the dictionary as the object argument and may return `nil` to indicate the value couldn't be converted. The funcion `unmap` does the reverse, given a value, convert it to its dictionary value. For example adding support for `NSDate` values, converting them from an `Int` representing the number of seconds since January 1970, and the `Int` can either be expressed as a number in JSON or as a string representing the number:
+To enable cast to cast from JSON/ a new type, for example lets use Date (any `DictionaryConvertible` class is automatically supported) you need to extend that class to support the `JSONValue` protocol with two methods. For example, lets extend `Date` so we can use Date type properties, this implementation assumes dates are sent as integers representing the time since 1970.
 
 ```swift
-extension Mapper {
-    class func map(object: AnyObject?) -> NSDate? {
+extension Date: JSONValue {
+    public static func value(from object: Any) -> Date? {
         switch object {
         case let x as String:
             guard let y = Int(x) else { return nil }
@@ -153,17 +144,20 @@ extension Mapper {
             return nil
         }
     }
+    
+    public var jsonValue: Any? {
+        return timeIntervalSince1970
+    }
 }
 ```
 
-You can extend `Mapper` to support any new custom type you have. By default, `Mapper` supports any type conforming to `DictionaryConvertible`, so classes you defined in `.cast` files will automatically work as property types in other classes.
-
+The `value(from:)` method is used to convert from JSON to a value. Note the implementation handles both the case the JSON contains an Int and the case it contains a string with an Int, i.e. both `"date": 2` and `"date": "2"`. JSON cast works this way for all basic values, like Int, Float or Bool.
 
 =======
 ### Awake
 
 
-By adding a `//! awake` comment to the class / struct decleration the init will call an `awake(with dictionary: [String: AnyObject]) -> Bool` functionary passing it the dictionary that was used to initialize the object. If the function returns true the init will succeed, if it returns false the init will fail. You can use the awakeFromDictionary method to perform last value validations after the dictionary is parsed as well as compute any derived value you need or do any post processing after the dictionary is read.
+By adding a `//! awake` comment to the class / struct decleration the init will call an `awake(with dictionary: JSONDictionary) -> Bool` functionary passing it the dictionary that was used to initialize the object. If the function returns true the init will succeed, if it returns false the init will fail. You can use the awakeFromDictionary method to perform last value validations after the dictionary is parsed as well as compute any derived value you need or do any post processing after the dictionary is read.
 
 ### `awakeWithDictionary`
 
@@ -192,5 +186,13 @@ By default, Xcode treats the `.cast` file as plain text and will not highlight i
 ## Swift 3
 
 JSON Cast is Swift 3 ready! If you are working with Xcode 8 beta and Swift 3 there is a Swift3 branch you can use which is compatible.
+
+## Accessing Cast Classes from Objective C
+
+Since the `DictionaryConvertible` defines an init method that is not visible from Objective C since it relies on the `JSONDictionary` protocol that is not an Objective C protocol, if the cast script sees a class that was defined as `@objc` it will add a convenience `init?(dictionary: [String: Any])` initializer so the class can be initialized from Objective C
+
+## Acknolwedgment
+
+Thanks to the great article pozted [here](http://jasonlarsen.me/2015/10/16/no-magic-json-pt3.html) we've refactored JSON Cast with protocols instead of type casting which improved run time performance.
 
 

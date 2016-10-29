@@ -10,8 +10,8 @@
 		E46F92441CF04F6B00BFE4AF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92431CF04F6B00BFE4AF /* main.swift */; };
 		E46F92651CF07BBB00BFE4AF /* Cast.h in Headers */ = {isa = PBXBuildFile; fileRef = E46F92641CF07BBB00BFE4AF /* Cast.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E46F926E1CF07BCA00BFE4AF /* Cast.h in Headers */ = {isa = PBXBuildFile; fileRef = E46F92641CF07BBB00BFE4AF /* Cast.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		E46F92761CF07C5600BFE4AF /* Mapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92751CF07C5600BFE4AF /* Mapper.swift */; };
-		E46F92771CF07C5600BFE4AF /* Mapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92751CF07C5600BFE4AF /* Mapper.swift */; };
+		E46F92761CF07C5600BFE4AF /* Cast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92751CF07C5600BFE4AF /* Cast.swift */; };
+		E46F92771CF07C5600BFE4AF /* Cast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92751CF07C5600BFE4AF /* Cast.swift */; };
 		E46F92991CF0802F00BFE4AF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92981CF0802F00BFE4AF /* AppDelegate.swift */; };
 		E46F929B1CF0802F00BFE4AF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F929A1CF0802F00BFE4AF /* ViewController.swift */; };
 		E46F929E1CF0802F00BFE4AF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E46F929C1CF0802F00BFE4AF /* Main.storyboard */; };
@@ -22,7 +22,7 @@
 		E46F92BB1CF081C200BFE4AF /* Cast.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E46F92621CF07BBB00BFE4AF /* Cast.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E4A03A4F1CF08B65007FD77B /* Classy.cast in Sources */ = {isa = PBXBuildFile; fileRef = E46F92B61CF0805900BFE4AF /* Classy.cast */; };
 		E4A509AB1CF0A468007DA42E /* Cast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E46F92621CF07BBB00BFE4AF /* Cast.framework */; };
-		E4A509AE1CF0A496007DA42E /* Mapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92751CF07C5600BFE4AF /* Mapper.swift */; };
+		E4A509AE1CF0A496007DA42E /* Cast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92751CF07C5600BFE4AF /* Cast.swift */; };
 		E4A509B11CF0A496007DA42E /* Cast.h in Headers */ = {isa = PBXBuildFile; fileRef = E46F92641CF07BBB00BFE4AF /* Cast.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
@@ -36,7 +36,7 @@
 			outputFiles = (
 				"${DERIVED_SOURCES_DIR}/${INPUT_FILE_BASE}.swift",
 			);
-			script = "${SRCROOT}/cast -i \"$INPUT_FILE_PATH\" \"$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.swift\"\n";
+			script = "${SRCROOT}/cast -c \"$INPUT_FILE_PATH\" \"$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.swift\"\n";
 		};
 /* End PBXBuildRule section */
 
@@ -87,7 +87,7 @@
 		E46F92641CF07BBB00BFE4AF /* Cast.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cast.h; sourceTree = "<group>"; };
 		E46F92661CF07BBB00BFE4AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E46F92731CF07BCA00BFE4AF /* CastX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CastX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E46F92751CF07C5600BFE4AF /* Mapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
+		E46F92751CF07C5600BFE4AF /* Cast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cast.swift; sourceTree = "<group>"; };
 		E46F92961CF0802F00BFE4AF /* CastingApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CastingApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E46F92981CF0802F00BFE4AF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E46F929A1CF0802F00BFE4AF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -187,7 +187,7 @@
 		E46F92631CF07BBB00BFE4AF /* Cast */ = {
 			isa = PBXGroup;
 			children = (
-				E46F92751CF07C5600BFE4AF /* Mapper.swift */,
+				E46F92751CF07C5600BFE4AF /* Cast.swift */,
 				E46F92641CF07BBB00BFE4AF /* Cast.h */,
 				E46F92661CF07BBB00BFE4AF /* Info.plist */,
 			);
@@ -364,7 +364,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = Houzz;
 				TargetAttributes = {
 					E46F923F1CF04F6B00BFE4AF = {
@@ -463,7 +463,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E46F92761CF07C5600BFE4AF /* Mapper.swift in Sources */,
+				E46F92761CF07C5600BFE4AF /* Cast.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -471,7 +471,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E46F92771CF07C5600BFE4AF /* Mapper.swift in Sources */,
+				E46F92771CF07C5600BFE4AF /* Cast.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -497,7 +497,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4A509AE1CF0A496007DA42E /* Mapper.swift in Sources */,
+				E4A509AE1CF0A496007DA42E /* Cast.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -550,8 +550,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -588,7 +590,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Houzz Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -642,7 +644,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution: Houzz Inc. (J63Q35M68Q)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -668,9 +670,9 @@
 		E43CEC8F1CF9FB2F00811415 /* Distribution Ad Hoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = CastingApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -713,8 +715,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -759,8 +763,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -779,6 +785,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
@@ -805,7 +812,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -835,7 +842,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Houzz Inc. (J63Q35M68Q)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -915,9 +922,9 @@
 		E46F92B11CF0802F00BFE4AF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = CastingApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -931,9 +938,9 @@
 		E46F92B21CF0802F00BFE4AF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = CastingApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -983,6 +990,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -1010,7 +1018,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Houzz Inc. (J63Q35M68Q)";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution: Houzz Inc. (J63Q35M68Q)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;

@@ -14,9 +14,9 @@ var isStruct = false
 var classAccess = ""
 var didImportCast = false
 var nullEmptyString = false
-var ignoreCase = false
 var doImport = true
 var generateRead = false
+var isObjc = false
 
 let encodeMap = [
     "Bool": ("aCoder.encode(Bool(%@), forKey: \"%@\")", "aDecoder.decodeBool(forKey:\"%@\")"),
@@ -72,6 +72,17 @@ extension String {
     func replace(_ regex: Regex, with template: String) -> String {
         return regex.replace(self, with: template)
     }
+
+     subscript(index: Int) -> String {
+        return String(self[self.index(self.startIndex, offsetBy: index)])
+    }
+
+     subscript(integerRange: Range<Int>) -> String {
+        let start = self.index(self.startIndex, offsetBy: integerRange.lowerBound)
+        let end = self.index(self.startIndex, offsetBy: integerRange.upperBound)
+        let range = start ..< end
+        return self[range]
+    }
 }
 
 struct VarInfo {
@@ -95,17 +106,15 @@ struct VarInfo {
             self.optional = false
             self.isNullable = false
         }
-        var correctCaseKey: String
-        if upperCase {
-            let n = name as NSString
-            correctCaseKey = in_key ?? n.substring(to: 1).capitalized + n.substring(from: 1)
-        } else if ignoreCase {
-            correctCaseKey = (in_key ?? name).lowercased()
-        } else {
-            correctCaseKey = in_key ?? name
-        }
-        self.key = correctCaseKey.components(separatedBy: ",").map {
-            $0.trimmingCharacters(in: CharacterSet.whitespaces)
+
+        self.key = (in_key ?? name).components(separatedBy: ",").map {
+            return $0.components(separatedBy: "/").map({
+            var correctCaseKey: String = $0.trimmingCharacters(in: CharacterSet.whitespaces)
+            if upperCase {
+                return "\(correctCaseKey[0].uppercased())\(correctCaseKey[1 ..< correctCaseKey.characters.count])"
+            }
+            return correctCaseKey
+            }).joined(separator:"/")
         }
         self.defaultValue = defaultValue
     }
@@ -185,91 +194,20 @@ struct VarInfo {
         }
     }
 
-    func generateInit(from keys: [String]) {
-        generateRead(from: keys, nilMissing: true)
-    }
-
-    func generateRead(from keys: [String], nilMissing doNil: Bool) {
-        let aKey = keys.first!
-        let restOfKeys: [String]? = (keys.count > 1 ? Array(keys.dropFirst(1)) : nil)
-        let comp = aKey.components(separatedBy: "/")
-        for (idx, aComp) in comp.enumerated() {
-            if idx == comp.count - 1 {
-                initFrom(key: aComp, rest: restOfKeys, nilMissing: doNil)
-                for _ in 0 ..< idx {
-                    if let restOfKeys = restOfKeys {
-                        output.append("\t\t} else {")
-                        generateRead(from: restOfKeys, nilMissing: doNil)
-                        output.append("\t\t}")
-                    } else if let def = defaultValue {
-                        output.append("\t\t} else { \(name) = \(def) }")
-                    } else if !optional {
-                        output.append("\t\t}")
-                        if doNil {
-                            output.append("\t\telse { return nil }")
-                        }
-                    } else {
-                        if doNil {
-                            output.append("\t\t} else { \(name) = nil }")
-                        }
-                    }
-                }
-            } else {
-                if ignoreCase {
-                    output.append("\t\tif let dict = Mapper.lowercased(dict[\"\(aComp)\"] as? [String: Any]) {")
-                } else {
-                    output.append("\t\tif let dict = dict[\"\(aComp)\"] as? [String: Any] {")
-                }
-            }
+    func generateRead(nilMissing doNil: Bool) {
+        var assignments = key.map { "dict.value(for: \"\($0)\")" }
+        if let defaultValue = defaultValue {
+            assignments.append("\(defaultValue)")
         }
-    }
-
-    func initFrom(key aKey: String, rest: [String]?, nilMissing doNil: Bool) {
-        var mapStatement = "Mapper.map(dict[\"\(aKey)\"])"
-        if isEnum {
-            output.append("if let v: \(rawType!) = \(mapStatement) {")
-            mapStatement = "\(type)(rawValue: v)"
-        }
-
-        var whereStatement = ""
-        if nullEmptyString && type == "String" {
-            whereStatement = ", !v.isEmpty "
-        }
-
-        output.append("if let v: \(type) = \(mapStatement) \(whereStatement){ ")
-        output.append("\(name) = v")
-
-        if let rest = rest {
-            output.append("} else {")
-            generateInit(from: rest)
-            output.append("}")
-        } else if let def = defaultValue {
-            output.append("} else { \(name) = \(def) }")
-        } else if !optional {
-            if doNil {
-                output.append("} else { return nil }")
-            } else {
-                output.append("}")
-            }
-        } else if isNullable {
-            if doNil {
-                output.append("} else { \(name) = nil }")
-            } else {
-                output.append("}")
-            }
+        let assignExpr = assignments.joined(separator: " ?? ")
+        if optional || isNullable || defaultValue != nil {
+            output.append("\t\t\(name) = \(assignExpr)")
         } else {
-            output.append("}")
-        }
-
-        if isEnum {
-            if let def = defaultValue {
-                output.append("} else { \(name) = \(def) }")
-            } else if !optional {
-                output.append("} else { return nil }")
-            } else if isNullable {
-                output.append("} else { \(name) = nil }")
-            } else {
-                output.append("}")
+            output.append("\t\tif let v:\(type) = \(assignExpr) {")
+            output.append("\t\t\t\(name) = v")
+            output.append("\t\t}")
+            if doNil {
+                output.append(" else { return nil }")
             }
         }
     }
@@ -288,15 +226,11 @@ func createFunctions() {
     // init
     let reqStr = isStruct ? "" : "required"
     
-    if ignoreCase {
-        output.append("\(reqStr) \(classAccess) init?(dictionary unknownCaseDict: [String: Any]) {")
-        output.append("        guard let dict = Mapper.lowercased(unknownCaseDict) else { return nil }")
-    } else {
-        output.append("\(reqStr) \(classAccess) init?(dictionary dict: [String: Any]) {")
-    }
-    
+
+        output.append("\(reqStr) \(classAccess) init?(dictionary dict: JSONDictionary) {")
+
     for variable in variables {
-        variable.generateInit(from: variable.key)
+        variable.generateRead(nilMissing: true)
     }
     
     if !override.isEmpty {
@@ -315,25 +249,11 @@ func createFunctions() {
 
     // read(from:)
     if generateRead {
-        var hasVar = false
-        for variable in variables {
-            if !variable.isLet {
-                hasVar = true
-                break;
-            }
-        }
-        if ignoreCase {
-            output.append("\(override) \(classAccess) func read(from unknownCaseDict: [String: Any]) {")
-            if hasVar || !override.isEmpty {
-                output.append("        guard let dict = Mapper.lowercased(unknownCaseDict) else { return }")
-            }
-        } else {
             output.append("\(override) \(classAccess) func read(from dict: [String: Any]) {")
-        }
 
         for variable in variables {
             if !variable.isLet {
-                variable.generateRead(from: variable.key, nilMissing: false)
+                variable.generateRead(nilMissing: false)
             }
         }
 
@@ -352,13 +272,15 @@ func createFunctions() {
     } else {
         output.append("\t\tvar dict = super.dictionaryRepresentation()")
     }
-    
+
+
     for variable in variables {
+        let optStr = variable.optional ? "?" : ""
         let keys = variable.key.first!.components(separatedBy: "/")
         for (idx, key) in keys.enumerated() {
             let dName = (idx == 0) ? "dict" : "dict\(idx)"
             if idx == keys.count - 1 {
-                output.append("\t\tif let x = Mapper.unmap(\(variable.name)) {")
+                output.append("\t\tif let x = \(variable.name)\(optStr).jsonValue {")
                 output.append("\t\t\t\(dName)[\"\(key)\"] = x")
                 output.append("\t\t}")
                 
@@ -417,6 +339,13 @@ func createFunctions() {
             output.append("\t}")
         }
     }
+
+    if isObjc && override.isEmpty {
+        // class was declard @objc and is a base class not inhereting from other DictionaryConvertible classes
+        output.append("\tconvenience init?(dictionary: [String: Any]) {")
+        output.append("\t\tself.init(dictionary: dictionary as JSONDictionary)")
+        output.append("\t}")
+    }
 }
 
 var inputFile: String? = nil
@@ -429,15 +358,10 @@ for (idx, arg) in CommandLine.arguments.enumerated() {
     switch arg {
     case "-c", "-upper", "-uppercase":
         upperCase = true
-        ignoreCase = false
-        
+
     case "-n", "-null", "-nullempty":
         nullEmptyString = true
-        
-    case "-i", "-ignore", "-ignorecase":
-        upperCase = false
-        ignoreCase = true
-        
+
     case "-m", "-noimport":
         doImport = false
 
@@ -549,6 +473,7 @@ for line in input {
                 variables = [VarInfo]()
                 callAwake = false
                 isStruct = (matches[1] == "struct")
+                isObjc = line.contains("@objc")
                 if let matches: [String?] = accessRegex.matchGroups(line) {
                     classAccess = matches[1] ?? "internal"
                 } else {
