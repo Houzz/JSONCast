@@ -393,3 +393,24 @@ extension DictionaryConvertible {
         fatalError("read(from:) not implemented, run JSON cast with -read option")
     }
 }
+
+extension NSCoder {
+    open func encode<A:RawRepresentable>(_ enm: A, forKey key: String) where A.RawValue == String {
+        encode(enm.rawValue, forKey: key)
+    }
+
+    open func encode<A:RawRepresentable>(_ enm: A, forKey key: String) where A.RawValue == Int {
+        encode(Int32(enm.rawValue), forKey: key)
+    }
+
+    open func decode<A:RawRepresentable>(forKey key: String) -> A? where A.RawValue == String {
+        if let raw = decodeObject(forKey: key) as? String {
+            return A(rawValue: raw)
+        }
+        return nil
+    }
+    open func decode<A:RawRepresentable>(forKey key: String) -> A? where A.RawValue == Int {
+        let raw = Int(decodeInt32(forKey: key))
+        return A(rawValue: raw)
+    }
+}
