@@ -218,7 +218,7 @@ func createFunctions() {
     if classInheritence == nil {
         classInheritence = [String]()
     }
-    if !classInheritence!.contains("DictionaryConvertible") {
+    if !classInheritence!.contains("DictionaryConvertible") && !isStruct {
         override = "override"
     }
     
@@ -236,11 +236,10 @@ func createFunctions() {
         output.append("\t\tsuper.init(dictionary: dict)")
     }
 
-
-        if classInheritence!.contains("DictionaryConvertible") {
-            output.append("\t\tsuper.init()")
-        }
-        output.append("\t\tif !awake(with: dict) { return nil }")
+    if classInheritence!.contains("DictionaryConvertible") && !isStruct {
+        output.append("\t\tsuper.init()")
+    }
+    output.append("\t\tif !awake(with: dict) { return nil }")
 
     output.append("\t}")
 
