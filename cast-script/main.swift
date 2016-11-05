@@ -233,7 +233,7 @@ func createFunctions() {
     
     if !override.isEmpty {
         output.append("\t\tsuper.init(dictionary: dict)")
-    } else if classInheritence!.contains("DictionaryConvertible") && !isStruct && override.isEmpty {
+    } else if classInheritence!.contains("DictionaryConvertible") && classInheritence![0] != "DictionaryConvertible" && !isStruct && override.isEmpty {
         output.append("\t\tsuper.init()")
     }
     if override.isEmpty {
