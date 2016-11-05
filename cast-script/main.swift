@@ -107,7 +107,7 @@ struct VarInfo {
             self.isNullable = false
         }
 
-        self.key = (in_key ?? name).components(separatedBy: ",").map {
+        self.key = (in_key ?? name).components(separatedBy: "??").map {
             return $0.components(separatedBy: "/").map({
             var correctCaseKey: String = $0.trimmingCharacters(in: CharacterSet.whitespaces)
             if upperCase {
