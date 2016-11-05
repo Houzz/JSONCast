@@ -6,7 +6,6 @@ import Foundation
 var classInheritence: [String]?
 var className: String?
 var output = [String]()
-var callAwake = false
 var nscoding = false
 var upperCase = false
 var enumMapping = [String: String]()
@@ -238,13 +237,11 @@ func createFunctions() {
     }
 
 
-    if callAwake {
         if classInheritence!.contains("DictionaryConvertible") {
             output.append("\t\tsuper.init()")
         }
         output.append("\t\tif !awake(with: dict) { return nil }")
-    }
-    
+
     output.append("\t}")
 
     // read(from:)
@@ -386,7 +383,6 @@ let openBrace = Regex("\\{")
 let varRegex = Regex("(var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *(?://! *\"([^\"]+)\")?")
 let dictRegex = Regex("(var|let) +([^: ]+?) *: *(\\[.*?:.*?\\][!?]) *(?:= *([^ ]+))? *(?://! *\"([^ ]+)\")?")
 let ignoreRegex = Regex("(.*)//! *ignore", options: [.caseInsensitive])
-let awakeRegex = Regex("//! *awake", options: [.caseInsensitive])
 let codingRegex = Regex("//! *nscoding", options: [.caseInsensitive])
 let enumRegex = Regex("enum ([^ :]+)[ :]+([^ ]+)")
 let accessRegex = Regex("(public|private|internal)")
@@ -451,9 +447,6 @@ for line in input {
             } else if priorBraceLevel == 1 {
                 if ignoreRegex.match(line) {
                     outline = line.replace(ignoreRegex, with: "$1")
-                } else if awakeRegex.match(line) {
-                    callAwake = true
-                    continue
                 } else if codingRegex.match(line) {
                     nscoding = true && !isStruct
                     continue
@@ -471,7 +464,6 @@ for line in input {
                 classInheritence = matches[3]?.replacingOccurrences(of: " ", with: "").components(separatedBy: ",")
                 className = matches[2]
                 variables = [VarInfo]()
-                callAwake = false
                 isStruct = (matches[1] == "struct")
                 isObjc = line.contains("@objc")
                 if let matches: [String?] = accessRegex.matchGroups(line) {

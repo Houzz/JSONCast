@@ -102,22 +102,7 @@ In this definition we have a readonly property `a` that will be initialized from
 
 ### Supporting Enums
 
-To add enums backed by compatible types, add the enum declaration to the `.cast` file. For example:
-
-```swift
-enum Option: Int {
-    case OptionZero
-    case OptionOne
-}
-
-struct AnObject: DictionaryConvertible {
-    option: Option?
-}
-```
-	
-... will read the option from the dictionary for an `Option` enum backed by `Int`.
-
-Adding support for other Swift enums requires adding an extension to the `Mapper` class to support the new type, see the Mapper extension section.
+RawRepresentable enums are supported by default. To support pure swift enums one needs to have the enum adopt the protocol JSONValue which has methods to convert to/from a dictionary value and in order to support NSCoding one needs to also exten the NSCoding class and add an encode/decode functions for the enum type.
 
 ### JSONValue
 
@@ -154,7 +139,7 @@ The `value(from:)` method is used to convert from JSON to a value. Note the impl
 ### Awake
 
 
-By adding a `//! awake` comment to the class / struct decleration the init will call an `awake(with dictionary: JSONDictionary) -> Bool` functionary passing it the dictionary that was used to initialize the object. If the function returns true the init will succeed, if it returns false the init will fail. You can use the awakeFromDictionary method to perform last value validations after the dictionary is parsed as well as compute any derived value you need or do any post processing after the dictionary is read.
+The init will call an `awake(with dictionary: JSONDictionary) -> Bool` functionary passing it the dictionary that was used to initialize the object. If the function returns true the init will succeed, if it returns false the init will fail. You can use the awakeFromDictionary method to perform last value validations after the dictionary is parsed as well as compute any derived value you need or do any post processing after the dictionary is read.
 
 ### `awakeWithDictionary`
 
