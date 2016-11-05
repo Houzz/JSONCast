@@ -224,7 +224,6 @@ func createFunctions() {
     
     // init
     let reqStr = isStruct ? "" : "required"
-    
 
         output.append("\(reqStr) \(classAccess) init?(dictionary dict: JSONDictionary) {")
 
@@ -234,13 +233,12 @@ func createFunctions() {
     
     if !override.isEmpty {
         output.append("\t\tsuper.init(dictionary: dict)")
-    }
-
-    if classInheritence!.contains("DictionaryConvertible") && !isStruct {
+    } else if classInheritence!.contains("DictionaryConvertible") && !isStruct && override.isEmpty {
         output.append("\t\tsuper.init()")
     }
+    if override.isEmpty {
     output.append("\t\tif !awake(with: dict) { return nil }")
-
+    }
     output.append("\t}")
 
     // read(from:)
