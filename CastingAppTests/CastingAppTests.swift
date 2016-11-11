@@ -45,6 +45,7 @@ class CastingAppTests: XCTestCase {
             "A": ["1", 2, 3],
             "Cx": ["Name": "Joe", "Age": 15],
             "Another": "another",
+            "Second": ["first","second","third"],
             "D2": ["K": "v", "K2": 3]])!
         XCTAssert(b.x == 3)
         XCTAssert(b.a! == [1, 2, 3])
@@ -59,6 +60,7 @@ class CastingAppTests: XCTestCase {
         let dict2 = b.dictionaryRepresentation()
         XCTAssert(dict2["X"] as! Int == 3)
         XCTAssert((dict2["U"] as! String) == "http://houzz.com")
+        XCTAssert(b.second == "second")
 
         let d = b.copy() as! Classz
         XCTAssert(b.x == d.x)

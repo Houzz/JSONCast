@@ -26,6 +26,7 @@ enum What: String {
     let nested: CGFloat? //! "outer/inner ?? x/y"
     private(set) var d2: [String: Any]?
     var derived: String = "" //! ignore
+    var second: String? //! "second[1]"
     //! awake
 
     var xx:Int { //! ignore
