@@ -22,6 +22,7 @@ public protocol JSONValue {
 
 public protocol JSONKey {
     var value: String { get }
+    func contains(_ str: String) -> Bool
 }
 
 extension String: JSONKey {
@@ -41,7 +42,17 @@ public extension JSONDictionary {
         var accumulator: Any = self
 
         for component in pathComponents {
-            if let componentData = accumulator as? Self, let value = componentData.any(for: component) {
+            if let openIndex = component.range(of: "["), let closeIndex = component.range(of: "]") {
+                let path = component.substring(to: openIndex.lowerBound)
+                let indexString = component.substring(with: Range(uncheckedBounds: (openIndex.upperBound, closeIndex.lowerBound)))
+                guard let index = Int(indexString) else {
+                    return nil
+                }
+                if let componentData = accumulator as? Self, let value = componentData.any(for: path) as? [Any], value.count > index {
+                    accumulator = value[index]
+                    continue
+                }
+            } else if let componentData = accumulator as? Self, let value = componentData.any(for: component) {
                 accumulator = value
                 continue
             }
@@ -106,7 +117,31 @@ extension NSDictionary: JSONDictionary, JSONValue {
         return self.object(forKey: key)
     }
     public func any(forKeyPath path: JSONKey) -> Any? {
-        return self.value(forKeyPath: path.value.replacingOccurrences(of: "/", with: "."))
+        if path.contains("[") {
+            let keyPath = path as! String
+            let components = keyPath.components(separatedBy: "/")
+            var accumulator: Any = self
+            for component in components {
+                if let openIndex = component.range(of: "["), let closeIndex = component.range(of: "]") {
+                    let path = component.substring(to: openIndex.lowerBound)
+                    let indexString = component.substring(with: Range(uncheckedBounds: (openIndex.upperBound, closeIndex.lowerBound)))
+                    guard let index = Int(indexString) else {
+                        return nil
+                    }
+                    if let componentData = accumulator as? NSDictionary, let value = componentData.any(for: path) as? [Any], value.count > index {
+                        accumulator = value[index]
+                        continue
+                    }
+                } else if let componentData = accumulator as? NSDictionary, let value = componentData.any(for: component) {
+                    accumulator = value
+                    continue
+                }
+                return nil
+            }
+            return accumulator
+        } else {
+            return self.value(forKeyPath: path.value.replacingOccurrences(of: "/", with: "."))
+        }
     }
 }
 
@@ -389,7 +424,7 @@ extension DictionaryConvertible {
         return true
     }
 
-    public func read(from dictionary: [String: Any]) {
+    public func read(from dictionary: JSONDictionary) {
         fatalError("read(from:) not implemented, run JSON cast with -read option")
     }
 }

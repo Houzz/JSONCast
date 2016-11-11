@@ -249,7 +249,7 @@ func createFunctions() {
 
     // read(from:)
     if generateRead {
-        output.append("\(override) \(classAccess) func read(from dict: [String: Any]) {")
+        output.append("\(override) \(classAccess) func read(from dict: JSONDictionary) {")
 
         for variable in variables {
             if !variable.isLet {
@@ -345,6 +345,11 @@ func createFunctions() {
         output.append("\tconvenience init?(dictionary: [String: Any]) {")
         output.append("\t\tself.init(dictionary: dictionary as JSONDictionary)")
         output.append("\t}")
+        if generateRead {
+        output.append("func read(from dict: [String: Any]) {")
+        output.append(" read(from: dict as JSONDictionary)")
+        output.append("}")
+        }
     }
 }
 
