@@ -17,6 +17,7 @@ enum What: String {
 
 @objc public class Classy: NSObject, DictionaryConvertible, NSCoding, NSCopying {
     var powerMode: Int
+    var cust: Int //! custom
     let x: Int! = nil
     let y: String? = "as" //! "Arg ?? y"
     let why: What?

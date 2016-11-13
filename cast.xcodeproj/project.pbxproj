@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E405FEEA1DD8B9E800496CCE /* Cast.h in Headers */ = {isa = PBXBuildFile; fileRef = E405FEE71DD8B8AB00496CCE /* Cast.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E405FEEB1DD8B9EE00496CCE /* Cast.h in Headers */ = {isa = PBXBuildFile; fileRef = E405FEE71DD8B8AB00496CCE /* Cast.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E405FEEC1DD8BA5A00496CCE /* Cast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E405FEE81DD8B8AB00496CCE /* Cast.swift */; };
+		E405FEED1DD8BA5B00496CCE /* Cast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E405FEE81DD8B8AB00496CCE /* Cast.swift */; };
+		E405FEEE1DD8BA5C00496CCE /* Cast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E405FEE81DD8B8AB00496CCE /* Cast.swift */; };
 		E46F92441CF04F6B00BFE4AF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92431CF04F6B00BFE4AF /* main.swift */; };
-		E46F92651CF07BBB00BFE4AF /* Cast.h in Headers */ = {isa = PBXBuildFile; fileRef = E46F92641CF07BBB00BFE4AF /* Cast.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		E46F926E1CF07BCA00BFE4AF /* Cast.h in Headers */ = {isa = PBXBuildFile; fileRef = E46F92641CF07BBB00BFE4AF /* Cast.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		E46F92761CF07C5600BFE4AF /* Cast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92751CF07C5600BFE4AF /* Cast.swift */; };
-		E46F92771CF07C5600BFE4AF /* Cast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92751CF07C5600BFE4AF /* Cast.swift */; };
 		E46F92991CF0802F00BFE4AF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92981CF0802F00BFE4AF /* AppDelegate.swift */; };
 		E46F929B1CF0802F00BFE4AF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F929A1CF0802F00BFE4AF /* ViewController.swift */; };
 		E46F929E1CF0802F00BFE4AF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E46F929C1CF0802F00BFE4AF /* Main.storyboard */; };
@@ -22,8 +23,6 @@
 		E46F92BB1CF081C200BFE4AF /* Cast.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E46F92621CF07BBB00BFE4AF /* Cast.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E4A03A4F1CF08B65007FD77B /* Classy.cast in Sources */ = {isa = PBXBuildFile; fileRef = E46F92B61CF0805900BFE4AF /* Classy.cast */; };
 		E4A509AB1CF0A468007DA42E /* Cast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E46F92621CF07BBB00BFE4AF /* Cast.framework */; };
-		E4A509AE1CF0A496007DA42E /* Cast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46F92751CF07C5600BFE4AF /* Cast.swift */; };
-		E4A509B11CF0A496007DA42E /* Cast.h in Headers */ = {isa = PBXBuildFile; fileRef = E46F92641CF07BBB00BFE4AF /* Cast.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -81,13 +80,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E405FEE71DD8B8AB00496CCE /* Cast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cast.h; sourceTree = "<group>"; };
+		E405FEE81DD8B8AB00496CCE /* Cast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cast.swift; sourceTree = "<group>"; };
 		E46F92401CF04F6B00BFE4AF /* cast */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cast; sourceTree = BUILT_PRODUCTS_DIR; };
 		E46F92431CF04F6B00BFE4AF /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = main.swift; path = "../cast-script/main.swift"; sourceTree = "<group>"; };
 		E46F92621CF07BBB00BFE4AF /* Cast.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Cast.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E46F92641CF07BBB00BFE4AF /* Cast.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cast.h; sourceTree = "<group>"; };
 		E46F92661CF07BBB00BFE4AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E46F92731CF07BCA00BFE4AF /* CastX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CastX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E46F92751CF07C5600BFE4AF /* Cast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cast.swift; sourceTree = "<group>"; };
 		E46F92961CF0802F00BFE4AF /* CastingApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CastingApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E46F92981CF0802F00BFE4AF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E46F929A1CF0802F00BFE4AF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -100,7 +99,6 @@
 		E46F92AF1CF0802F00BFE4AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E46F92B61CF0805900BFE4AF /* Classy.cast */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; fileEncoding = 4; path = Classy.cast; sourceTree = "<group>"; };
 		E4A509B61CF0A496007DA42E /* CastTV.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CastTV.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E4A509B71CF0A496007DA42E /* Cast iOS copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Cast iOS copy-Info.plist"; path = "/Users/guy/Git/Cast/Cast iOS copy-Info.plist"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,7 +157,6 @@
 				E46F92971CF0802F00BFE4AF /* CastingApp */,
 				E46F92AC1CF0802F00BFE4AF /* CastingAppTests */,
 				E46F92411CF04F6B00BFE4AF /* Products */,
-				E4A509B71CF0A496007DA42E /* Cast iOS copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -187,8 +184,8 @@
 		E46F92631CF07BBB00BFE4AF /* Cast */ = {
 			isa = PBXGroup;
 			children = (
-				E46F92751CF07C5600BFE4AF /* Cast.swift */,
-				E46F92641CF07BBB00BFE4AF /* Cast.h */,
+				E405FEE71DD8B8AB00496CCE /* Cast.h */,
+				E405FEE81DD8B8AB00496CCE /* Cast.swift */,
 				E46F92661CF07BBB00BFE4AF /* Info.plist */,
 			);
 			name = Cast;
@@ -225,15 +222,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E46F92651CF07BBB00BFE4AF /* Cast.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E46F926D1CF07BCA00BFE4AF /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E46F926E1CF07BCA00BFE4AF /* Cast.h in Headers */,
+				E405FEEA1DD8B9E800496CCE /* Cast.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,7 +230,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4A509B11CF0A496007DA42E /* Cast.h in Headers */,
+				E405FEEB1DD8B9EE00496CCE /* Cast.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,7 +278,6 @@
 			buildPhases = (
 				E46F926B1CF07BCA00BFE4AF /* Sources */,
 				E46F926C1CF07BCA00BFE4AF /* Frameworks */,
-				E46F926D1CF07BCA00BFE4AF /* Headers */,
 				E46F926F1CF07BCA00BFE4AF /* Resources */,
 			);
 			buildRules = (
@@ -463,7 +451,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E46F92761CF07C5600BFE4AF /* Cast.swift in Sources */,
+				E405FEEC1DD8BA5A00496CCE /* Cast.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -471,7 +459,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E46F92771CF07C5600BFE4AF /* Cast.swift in Sources */,
+				E405FEED1DD8BA5B00496CCE /* Cast.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -497,7 +485,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4A509AE1CF0A496007DA42E /* Cast.swift in Sources */,
+				E405FEEE1DD8BA5C00496CCE /* Cast.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

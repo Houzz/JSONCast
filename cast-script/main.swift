@@ -93,10 +93,12 @@ struct VarInfo {
     var optional: Bool
     let isNullable: Bool
     let isLet: Bool
+    let useCustomParse: Bool
 
-    init(name: String, isLet: Bool, type: String, defaultValue: String? = nil, key in_key: String? = nil) {
+    init(name: String, isLet: Bool, type: String, defaultValue: String? = nil, key in_key: String? = nil, useCustom: Bool = false) {
         self.name = name
         self.isLet = isLet
+        useCustomParse = useCustom
         if type.hasSuffix("?") || type.hasSuffix("!") {
             self.isNullable = true
             self.type = type.trimmingCharacters(in: CharacterSet(charactersIn: "!?"))
@@ -195,7 +197,13 @@ struct VarInfo {
     }
 
     func generateRead(nilMissing doNil: Bool) {
-        var assignments = key.map { "dict.value(for: \"\($0)\")" }
+        var assignments: [String]
+        if useCustomParse {
+            let caseName = "\(name[0].uppercased())\(name[1 ..< name.characters.count])"
+            assignments = [ "\(className!).parse\(caseName)(from: dict)"]
+        } else {
+            assignments = key.map { "dict.value(for: \"\($0)\")" }
+        }
         if let defaultValue = defaultValue {
             assignments.append("\(defaultValue)")
         }
@@ -208,7 +216,7 @@ struct VarInfo {
             output.append("\t\t}")
             if doNil {
                 output.append(" else {")
-                if !houzzLogging {
+                if houzzLogging {
                     output.append("LogError(\"Error: \(className!).\(name) failed init\")")
                 }
                 output.append("   return nil")
@@ -391,8 +399,8 @@ var inClass = false
 let classRegex = Regex("(class|struct) +([^ :]+)[ :]+(.*)\\{ *$", options: [.anchorsMatchLines])
 let endBrace = Regex("\\}")
 let openBrace = Regex("\\{")
-let varRegex = Regex("(var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *(?://! *\"([^\"]+)\")?")
-let dictRegex = Regex("(var|let) +([^: ]+?) *: *(\\[.*?:.*?\\][!?]) *(?:= *([^ ]+))? *(?://! *\"([^ ]+)\")?")
+let varRegex = Regex("(var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *(?://! *\"([^\"]+)\")?(?://! *(custom))?")
+let dictRegex = Regex("(var|let) +([^: ]+?) *: *(\\[.*?:.*?\\][!?]) *(?:= *([^ ]+))? *(?://! *\"([^ ]+)\")?(?://! *(custom))?")
 let ignoreRegex = Regex("(.*)//! *ignore", options: [.caseInsensitive])
 let codingRegex = Regex("//! *nscoding", options: [.caseInsensitive])
 let enumRegex = Regex("enum ([^ :]+)[ :]+([^ ]+)")
@@ -462,10 +470,10 @@ for line in input {
                     nscoding = true && !isStruct
                     continue
                 } else if let matches: [String?] = dictRegex.matchGroups(line) {
-                    variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], key: matches[5]))
+                    variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], key: matches[5], useCustom: matches[6] != nil))
                     outline = line.replace(dictRegex, with: " $1 $2: $3")
                 } else if let matches: [String?] = varRegex.matchGroups(line) {
-                    variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], key: matches[5]))
+                    variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], key: matches[5], useCustom: matches[6] != nil))
                     outline = line.replace(varRegex, with: " $1 $2: $3")
                 }
             }

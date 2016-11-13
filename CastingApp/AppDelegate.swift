@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Cast
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -44,3 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+extension Classy {
+    static func parseCust(from dict: JSONDictionary) -> Int? {
+        return 0
+    }
+}

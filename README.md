@@ -135,15 +135,14 @@ extension Date: JSONValue {
 
 The `value(from:)` method is used to convert from JSON to a value. Note the implementation handles both the case the JSON contains an Int and the case it contains a string with an Int, i.e. both `"date": 2` and `"date": "2"`. JSON cast works this way for all basic values, like Int, Float or Bool.
 
+### Custom initialization
+
+You can write a custom parser to initialize a specific property, say you have a property `let powerMode: Int`, by adding a `//! custom` comment, cast will try to call a custom function that will get the dictionary as a parameter and should return an optional of the same type as the property, in this example the following will be called: `class func parsePowerMode(from dict: JSONDictionary) -> Int?`, the custom parser should return the value if the parsing was successful, or nil if not.
+
 =======
 ### Awake
 
-
 The init will call an `awake(with dictionary: JSONDictionary) -> Bool` functionary passing it the dictionary that was used to initialize the object. If the function returns true the init will succeed, if it returns false the init will fail. You can use the awakeFromDictionary method to perform last value validations after the dictionary is parsed as well as compute any derived value you need or do any post processing after the dictionary is read.
-
-### `awakeWithDictionary`
-
-By adding an `//! awake` comment to the class / struct declaration, the init will call `awakeWithDictionary(dict: [String: AnyObject]) -> Bool`, passing it the dictionary that was used to initialize the object. If the function returns `true`, the init will succeed, if it returns `false`, it will fail. You can use the `awakeFromDictionary` method to perform last value validations after the dictionary is parsed, as well as compute any derived value you need or do any post processing after the dictionary is read.
 
 ### Adopting `NSCoding` and `NSCopying`
 
@@ -175,6 +174,6 @@ Since the `DictionaryConvertible` defines an init method that is not visible fro
 
 ## Acknolwedgment
 
-Thanks to the great article pozted [here](http://jasonlarsen.me/2015/10/16/no-magic-json-pt3.html) we've refactored JSON Cast with protocols instead of type casting which improved run time performance.
+Thanks to the great article posted [here](http://jasonlarsen.me/2015/10/16/no-magic-json-pt3.html) we've refactored JSON Cast with protocols instead of type casting which improved run time performance.
 
 
