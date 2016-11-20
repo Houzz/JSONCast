@@ -317,7 +317,7 @@ extension Bool: JSONValue {
     public static func value(from object: Any) -> Bool? {
         switch object {
         case let x as String:
-            return Bool(x)
+            return Set(["true","True","TRUE","yes","Yes","YES","1","on","On","ON"]).contains(x)
 
         case let x as Bool:
             return x
