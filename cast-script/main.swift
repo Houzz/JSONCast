@@ -95,7 +95,7 @@ struct VarInfo {
     let isLet: Bool
     let useCustomParse: Bool
 
-    init(name: String, isLet: Bool, type: String, defaultValue: String? = nil, key in_key: String? = nil, useCustom: Bool = false) {
+    init(name: String, isLet: Bool, type: String, defaultValue: String? = nil, asIsKey: Bool, key in_key: String? = nil, useCustom: Bool = false) {
         self.name = name
         self.isLet = isLet
         useCustomParse = useCustom
@@ -112,7 +112,7 @@ struct VarInfo {
         self.key = (in_key ?? name).components(separatedBy: "??").map {
             return $0.components(separatedBy: "/").map({
                 var correctCaseKey: String = $0.trimmingCharacters(in: CharacterSet.whitespaces)
-                if upperCase {
+                if upperCase && !asIsKey {
                     return "\(correctCaseKey[0].uppercased())\(correctCaseKey[1 ..< correctCaseKey.characters.count])"
                 }
                 return correctCaseKey
@@ -399,8 +399,8 @@ var inClass = false
 let classRegex = Regex("(class|struct) +([^ :]+)[ :]+(.*)\\{ *$", options: [.anchorsMatchLines])
 let endBrace = Regex("\\}")
 let openBrace = Regex("\\{")
-let varRegex = Regex("(var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *(?://! *\"([^\"]+)\")?(?://! *(custom))?")
-let dictRegex = Regex("(var|let) +([^: ]+?) *: *(\\[.*?:.*?\\][!?]) *(?:= *([^ ]+))? *(?://! *\"([^ ]+)\")?(?://! *(custom))?")
+let varRegex = Regex("(var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *(?://! *(v?)\"([^\"]+)\")?(?://! *(custom))?")
+let dictRegex = Regex("(var|let) +([^: ]+?) *: *(\\[.*?:.*?\\][!?]) *(?:= *([^ ]+))? *(?://! *(v?)\"([^ ]+)\")?(?://! *(custom))?")
 let ignoreRegex = Regex("(.*)//! *ignore", options: [.caseInsensitive])
 let codingRegex = Regex("//! *nscoding", options: [.caseInsensitive])
 let enumRegex = Regex("enum ([^ :]+)[ :]+([^ ]+)")
@@ -470,10 +470,10 @@ for line in input {
                     nscoding = true && !isStruct
                     continue
                 } else if let matches: [String?] = dictRegex.matchGroups(line) {
-                    variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], key: matches[5], useCustom: matches[6] != nil))
+                    variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], asIsKey: !(matches[5]?.isEmpty ?? true), key: matches[6], useCustom: matches[7] != nil))
                     outline = line.replace(dictRegex, with: " $1 $2: $3")
                 } else if let matches: [String?] = varRegex.matchGroups(line) {
-                    variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], key: matches[5], useCustom: matches[6] != nil))
+                    variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], asIsKey: !(matches[5]?.isEmpty ?? true), key: matches[6], useCustom: matches[7] != nil))
                     outline = line.replace(varRegex, with: " $1 $2: $3")
                 }
             }

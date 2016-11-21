@@ -28,6 +28,7 @@ enum What: String {
     private(set) var d2: [String: Any]?
     var derived: String = "" //! ignore
     var second: String? //! "second[1]"
+    var lowercasedProperty: What = .yes //! v"will"
     //! awake
 
     var xx:Int { //! ignore
