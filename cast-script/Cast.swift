@@ -313,11 +313,14 @@ extension UInt64: JSONValue {
         }
     }
 }
+
+private let trueValues = Set(["true","True","TRUE","yes","Yes","YES","1","on","On","ON"])
+
 extension Bool: JSONValue {
     public static func value(from object: Any) -> Bool? {
         switch object {
         case let x as String:
-            return Set(["true","True","TRUE","yes","Yes","YES","1","on","On","ON"]).contains(x)
+            return trueValues.contains(x)
 
         case let x as Bool:
             return x
