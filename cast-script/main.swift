@@ -17,6 +17,7 @@ var doImport = true
 var generateRead = false
 var isObjc = false
 var houzzLogging = false
+var disableHouzzzLogging = false
 
 let encodeMap = [
     "Bool": ("aCoder.encode(Bool(%@), forKey: \"%@\")", "aDecoder.decodeBool(forKey:\"%@\")"),
@@ -216,7 +217,7 @@ struct VarInfo {
             output.append("\t\t}")
             if doNil {
                 output.append(" else {")
-                if houzzLogging {
+                if houzzLogging && !disableHouzzzLogging {
                     output.append("LogError(\"Error: \(className!).\(name) failed init\")")
                 }
                 output.append("   return nil")
@@ -408,7 +409,8 @@ let accessRegex = Regex("(public|private|internal)")
 var braceLevel = 0
 var importRegex = Regex("import +([^ ]+)")
 var inImportBlock = false
-var commentRegex = Regex("^//.*$")
+var commentRegex = Regex("^ *//.*$")
+let disableLogging = Regex("//! *nolog")
 
 output.append("// ================================================================== ")
 output.append("//")
@@ -469,6 +471,9 @@ for line in input {
                 } else if codingRegex.match(line) {
                     nscoding = true && !isStruct
                     continue
+                } else if disableLogging.match(line) {
+                    disableHouzzzLogging = true
+                    continue
                 } else if let matches: [String?] = dictRegex.matchGroups(line) {
                     variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], asIsKey: !(matches[5]?.isEmpty ?? true), key: matches[6], useCustom: matches[7] != nil))
                     outline = line.replace(dictRegex, with: " $1 $2: $3")
@@ -491,6 +496,7 @@ for line in input {
                     classAccess = "internal"
                 }
                 nscoding = false
+                disableHouzzzLogging = false
             }
         }
     }
