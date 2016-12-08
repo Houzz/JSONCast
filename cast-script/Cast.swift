@@ -117,31 +117,28 @@ extension NSDictionary: JSONDictionary, JSONValue {
         return self.object(forKey: key)
     }
     public func any(forKeyPath path: JSONKey) -> Any? {
-        if path.contains("[") {
-            let keyPath = path as! String
-            let components = keyPath.components(separatedBy: "/")
-            var accumulator: Any = self
-            for component in components {
-                if let openIndex = component.range(of: "["), let closeIndex = component.range(of: "]") {
-                    let path = component.substring(to: openIndex.lowerBound)
-                    let indexString = component.substring(with: Range(uncheckedBounds: (openIndex.upperBound, closeIndex.lowerBound)))
-                    guard let index = Int(indexString) else {
-                        return nil
-                    }
-                    if let componentData = accumulator as? NSDictionary, let value = componentData.any(for: path) as? [Any], value.count > index {
-                        accumulator = value[index]
-                        continue
-                    }
-                } else if let componentData = accumulator as? NSDictionary, let value = componentData.any(for: component) {
-                    accumulator = value
+        let pathComponents = path.value.components(separatedBy: "/")
+        var accumulator: Any = self
+
+        for component in pathComponents {
+            if let openIndex = component.range(of: "["), let closeIndex = component.range(of: "]") {
+                let path = component.substring(to: openIndex.lowerBound)
+                let indexString = component.substring(with: Range(uncheckedBounds: (openIndex.upperBound, closeIndex.lowerBound)))
+                guard let index = Int(indexString) else {
+                    return nil
+                }
+                if let componentData = accumulator as? JSONDictionary, let value = componentData.any(for: path) as? [Any], value.count > index {
+                    accumulator = value[index]
                     continue
                 }
-                return nil
+            } else if let componentData = accumulator as? JSONDictionary, let value = componentData.any(for: component) {
+                accumulator = value
+                continue
             }
-            return accumulator
-        } else {
-            return self.value(forKeyPath: path.value.replacingOccurrences(of: "/", with: "."))
+            return nil
         }
+
+        return accumulator
     }
 }
 
