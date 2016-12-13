@@ -1,0 +1,9 @@
+language: objective-c
+
+xcode_project: cast.xcodeproj
+xcode_scheme: CastingApp
+osx_image: xcode8.2
+xcode_sdk: iphonesimulator10.1
+
+script:
+- xcodebuild clean build test -project cast.xcodeproj -scheme CastingApp
