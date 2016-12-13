@@ -18,6 +18,7 @@ var generateRead = false
 var isObjc = false
 var houzzLogging = false
 var disableHouzzzLogging = false
+var generateDefaultInit = false
 
 let encodeMap = [
     "Bool": ("aCoder.encode(Bool(%@), forKey: \"%@\")", "aDecoder.decodeBool(forKey:\"%@\")"),
@@ -225,6 +226,15 @@ struct VarInfo {
             }
         }
     }
+
+    func getInitParam() -> String {
+        let optPart = optional ? "?" : ""
+        return "\(name): \(type)\(optPart)" + (defaultValue.map { " = " + $0 } ?? "")
+    }
+
+    func getInitAssign() -> String {
+        return "\t\tself.\(name) = \(name)"
+    }
 }
 var variables = [VarInfo]()
 
@@ -255,6 +265,16 @@ func createFunctions() {
         output.append("\t\tif !awake(with: dict) { return nil }")
     }
     output.append("\t}")
+
+    // init(values...)
+    if generateDefaultInit {
+        let params = variables.map { return $0.getInitParam() }.joined(separator: ", ")
+        output.append("\tinit(\(params)) {")
+        for variable in variables {
+            output.append(variable.getInitAssign())
+        }
+        output.append("\t}")
+    }
 
     // read(from:)
     if generateRead {
@@ -384,6 +404,9 @@ for (idx, arg) in CommandLine.arguments.enumerated() {
 
     case "-houzz":
         houzzLogging = true
+
+    case "-init":
+        generateDefaultInit = true
 
     default:
         if inputFile == nil {
