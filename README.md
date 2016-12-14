@@ -1,4 +1,5 @@
 # JSON Cast
+![build status](https://travis-ci.org/Houzz/JSONCast.svg?branch=master)
 
 We explain a bit more about JSON Cast in our [blog post]( http://blog.houzz.com/post/148054770808/a-json-parsing-class-generator).
 
