@@ -428,7 +428,7 @@ let dictRegex = Regex("(var|let) +([^: ]+?) *: *(\\[.*?:.*?\\][!?]) *(?:= *([^ ]
 let ignoreRegex = Regex("(.*)//! *ignore", options: [.caseInsensitive])
 let codingRegex = Regex("//! *nscoding", options: [.caseInsensitive])
 let enumRegex = Regex("enum ([^ :]+)[ :]+([^ ]+)")
-let accessRegex = Regex("(public|private|internal)")
+let accessRegex = Regex("(public|private|internal|open)")
 var braceLevel = 0
 var importRegex = Regex("import +([^ ]+)")
 var inImportBlock = false
@@ -515,6 +515,9 @@ for line in input {
                 isObjc = line.contains("@objc")
                 if let matches: [String?] = accessRegex.matchGroups(line) {
                     classAccess = matches[1] ?? "internal"
+                    if classAccess == "open" {
+                        classAccess = "public"
+                    }
                 } else {
                     classAccess = "internal"
                 }
