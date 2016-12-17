@@ -365,7 +365,7 @@ extension UInt: JSONValue, Codable {
     }
 
     public func encode(with coder: NSCoder, forKey key: String) {
-        coder.encode(self, forKey: key)
+        coder.encode(Int32(self), forKey: key)
     }
 
     public static func decode(with decoder: NSCoder, fromKey key: String) -> UInt? {
@@ -392,7 +392,7 @@ extension UInt8: JSONValue, Codable {
     }
 
     public func encode(with coder: NSCoder, forKey key: String) {
-        coder.encode(self, forKey: key)
+        coder.encode(Int32(self), forKey: key)
     }
 
     public static func decode(with decoder: NSCoder, fromKey key: String) -> UInt8? {
@@ -418,7 +418,7 @@ extension UInt16: JSONValue, Codable {
     }
 
     public func encode(with coder: NSCoder, forKey key: String) {
-        coder.encode(self, forKey: key)
+        coder.encode(Int32(self), forKey: key)
     }
 
     public static func decode(with decoder: NSCoder, fromKey key: String) -> UInt16? {
@@ -444,7 +444,7 @@ extension UInt32: JSONValue, Codable {
     }
 
     public func encode(with coder: NSCoder, forKey key: String) {
-        coder.encode(self, forKey: key)
+        coder.encode(Int64(self), forKey: key)
     }
 
     public static func decode(with decoder: NSCoder, fromKey key: String) -> UInt32? {
@@ -470,7 +470,7 @@ extension UInt64: JSONValue, Codable {
     }
 
     public func encode(with coder: NSCoder, forKey key: String) {
-        coder.encode(self, forKey: key)
+        coder.encode(Int64(self), forKey: key)
     }
 
     public static func decode(with decoder: NSCoder, fromKey key: String) -> UInt64? {

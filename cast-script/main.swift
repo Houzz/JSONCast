@@ -19,7 +19,7 @@ var isObjc = false
 var houzzLogging = false
 var disableHouzzzLogging = false
 var generateDefaultInit = false
-
+var classWantsDefaultInit = false
 
 class Regex {
     private let expression: NSRegularExpression
@@ -191,7 +191,8 @@ struct VarInfo {
     }
 
     func getInitParam() -> String {
-        let optPart = optional ? "?" : ""
+        let optPart = optional || self.isNullable ? "?" : ""
+        let defaultValue = self.defaultValue ?? (self.optional  ? "nil" : nil)
         return "\(name): \(type)\(optPart)" + (defaultValue.map { " = " + $0 } ?? "")
     }
 
@@ -230,7 +231,7 @@ func createFunctions() {
     output.append("\t}")
 
     // init(values...)
-    if generateDefaultInit {
+    if generateDefaultInit || classWantsDefaultInit {
         let params = variables.map { return $0.getInitParam() }.joined(separator: ", ")
         output.append("\tinit(\(params)) {")
         for variable in variables {
@@ -285,7 +286,7 @@ func createFunctions() {
                 }
             } else {
                 let nidx = idx + 1
-                let nextName = (idx == 1) ? "dict" : "dict\(nidx)"
+                let nextName =  "dict\(nidx)"
                 output.append("\t\tdo {")
                 output.append("\t\t\t var \(nextName) = \(dName)[\"\(key)\"] as? [String: Any] ?? [String: Any]()")
             }
@@ -397,6 +398,7 @@ var importRegex = Regex("import +([^ ]+)")
 var inImportBlock = false
 var commentRegex = Regex("^ *//[^!].*$")
 let disableLogging = Regex("//! *nolog")
+let classInit = Regex("//! +init\\b")
 
 output.append("// ================================================================== ")
 output.append("//")
@@ -461,6 +463,9 @@ for line in input {
                 } else if codingRegex.match(line) {
                     nscoding = true && !isStruct
                     continue
+                } else if classInit.match(line){
+                    classWantsDefaultInit = true
+                    continue
                 } else if disableLogging.match(line) {
                     disableHouzzzLogging = true
                     continue
@@ -490,6 +495,7 @@ for line in input {
                 }
                 nscoding = false
                 disableHouzzzLogging = false
+                classWantsDefaultInit = false
             }
         }
     }
