@@ -20,14 +20,6 @@ var houzzLogging = false
 var disableHouzzzLogging = false
 var generateDefaultInit = false
 
-let encodeMap = [
-    "Bool": ("aCoder.encode(Bool(%@), forKey: \"%@\")", "aDecoder.decodeBool(forKey:\"%@\")"),
-    "Float": ("aCoder.encode(Float(%@), forKey: \"%@\")", "aDecoder.decodeFloat(forKey:\"%@\")"),
-    "Double": ("aCoder.encode(Double(%@), forKey: \"%@\")", "aDecoder.decodeDouble(forKey:\"%@\")"),
-    "CGFloat": ("aCoder.encode(Double(%@), forKey: \"%@\")", "CGFloat(aDecoder.decodeDouble(forKey:\"%@\"))"),
-    "Int": ("aCoder.encode(Int(%@), forKey: \"%@\")", "aDecoder.decodeInteger(forKey:\"%@\")"),
-    "UInt": ("aCoder.encode(Int(%@), forKey: \"%@\")", "UInt(aDecoder.decodeInteger(forKey:\"%@\"))")
-]
 
 class Regex {
     private let expression: NSRegularExpression
@@ -139,25 +131,11 @@ struct VarInfo {
         get {
             var ret = ""
             var vv = name
-            var vtype = type
             if optional {
-                vv = "v"
-                ret += "if let v = \(name) {\n"
+                vv = "\(name)?"
             }
 
-            if let rawType = enumMapping[vtype] {
-                vv = "\(vv).rawValue"
-                vtype = rawType
-            }
-            if let f = encodeMap[vtype] {
-                ret += String(format: f.0, vv, name)
-            } else {
-                ret += "aCoder.encode(\(vv), forKey: \"\(name)\")"
-            }
-
-            if optional {
-                ret += "\n\t\t}"
-            }
+            ret += "\(vv).encode(with: aCoder, forKey: \"\(name)\")"
 
             return ret
         }
@@ -165,25 +143,10 @@ struct VarInfo {
 
     var decodeCall: String {
         get {
-            var vtype = type
-            if let rawType = enumMapping[vtype] {
-                vtype = rawType
-            }
 
             var v: String
-            if let f = encodeMap[vtype] {
-                let enc = String(format: f.1, name)
-                v = "\t\tif aDecoder.containsValue(forKey:\"\(name)\") { let v = \(enc)"
-            } else {
-                v = "if let v = aDecoder.decodeObject(forKey:\"\(name)\") as? \(vtype) {"
-            }
-
-            if vtype != type {
-                v += "\n\t\t\t\(name) = \(type)(rawValue: v)!"
-            } else {
+                v = "if let v = \(type).decode(with: aDecoder, fromKey:\"\(name)\") {"
                 v += "\n\t\t\t\(name) = v"
-            }
-
             v += "\n\t\t}"
 
             if let def = defaultValue {
@@ -432,7 +395,7 @@ let accessRegex = Regex("(public|private|internal|open)")
 var braceLevel = 0
 var importRegex = Regex("import +([^ ]+)")
 var inImportBlock = false
-var commentRegex = Regex("^ *//.*$")
+var commentRegex = Regex("^ *//[^!].*$")
 let disableLogging = Regex("//! *nolog")
 
 output.append("// ================================================================== ")
@@ -445,6 +408,10 @@ output.append("//")
 output.append("// ================================================================== ")
 
 for line in input {
+    if commentRegex.match(line) {
+        continue
+    }
+
     var outline = line
 
     let priorBraceLevel = braceLevel
@@ -527,11 +494,7 @@ for line in input {
         }
     }
 
-    if commentRegex.match(line) {
-        continue
-    }
-
-    output.append(outline)
+     output.append(outline)
 }
 
 try! output.joined(separator: "\n").write(toFile: outputFile!, atomically: true, encoding: String.Encoding.utf8)

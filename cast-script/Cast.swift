@@ -32,7 +32,7 @@ extension String: JSONKey {
 }
 
 public protocol JSONDictionary {
-    func any(forKeyPath path: JSONKey)  -> Any?
+    func any(forKeyPath path: JSONKey) -> Any?
     func any(for key: String) -> Any?
 }
 
@@ -63,38 +63,50 @@ public extension JSONDictionary {
     }
 
     public func value<A: JSONValue>(for key: JSONKey) -> A? {
-        if let any = any(forKeyPath: key)  {
+        if let any = any(forKeyPath: key) {
             return A.value(from: any) as? A
         }
         return nil
     }
 
     public func value<A: JSONValue>(for key: JSONKey) -> [A]? {
-        if let any = any(forKeyPath: key)  {
+        if let any = any(forKeyPath: key) {
             return Array<A>.value(from: any)
         }
         return nil
     }
 
-    public func value<A: RawRepresentable>(for key: JSONKey) -> A? where A.RawValue: JSONValue  {
-        if let raw: A.RawValue = value(for: key)  {
+    public func value<A: RawRepresentable>(for key: JSONKey) -> A? where A.RawValue: JSONValue {
+        if let raw: A.RawValue = value(for: key) {
             return A(rawValue: raw)
         }
         return nil
     }
 
     public func value<A: RawRepresentable>(for key: JSONKey) -> [A]? where A.RawValue: JSONValue {
-        if let rawArray: [A.RawValue] = value(for: key)  {
+        if let rawArray: [A.RawValue] = value(for: key) {
             return rawArray.flatMap { A(rawValue: $0) }
         }
         return nil
     }
-
 }
 
-extension RawRepresentable  {
+extension RawRepresentable {
     public var jsonValue: Any? {
         return self.rawValue
+    }
+}
+
+extension RawRepresentable where RawValue: Codable {
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> Self? {
+        guard let i = RawValue.decode(with: decoder, fromKey: key) else {
+            return nil
+        }
+        return Self(rawValue: i)
+    }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        self.rawValue.encode(with: coder, forKey: key)
     }
 }
 
@@ -103,19 +115,27 @@ extension Dictionary: JSONDictionary, JSONValue {
         guard let aKey = key as? Key else { return nil }
         return self[aKey]
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> [Key: Value]? {
+        return decoder.decodeObject(forKey: key) as? [Key: Value]
+    }
 }
 
-extension Dictionary where Key:JSONKey {
+extension Dictionary where Key: JSONKey {
     public func value(from object: Any) -> Value? {
         return object as? Value
     }
 }
 
-
 extension NSDictionary: JSONDictionary, JSONValue {
     public func any(for key: String) -> Any? {
         return self.object(forKey: key)
     }
+
     public func any(forKeyPath path: JSONKey) -> Any? {
         let pathComponents = path.value.components(separatedBy: "/")
         var accumulator: Any = self
@@ -146,12 +166,31 @@ extension JSONValue {
     public static func value(from object: Any) -> Value? {
         return object as? Value
     }
+
     public var jsonValue: Any? {
         return self
     }
 }
-extension String: JSONValue {}
-extension Int: JSONValue {
+
+public protocol Codable {
+    func encode(with coder: NSCoder, forKey key: String)
+    static func decode(with decoder: NSCoder, fromKey key: String) -> Self?
+}
+
+extension String: JSONValue, Codable {
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> String? {
+        guard let i = decoder.decodeObject(forKey: key) as? String else {
+            return nil
+        }
+        return i
+    }
+}
+
+extension Int: JSONValue, Codable {
     public static func value(from object: Any) -> Int? {
         switch object {
         case let x as String:
@@ -164,8 +203,20 @@ extension Int: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> Int? {
+        if decoder.containsValue(forKey: key) {
+            return Int(decoder.decodeInt64(forKey: key))
+        }
+        return nil
+    }
 }
-extension Int8: JSONValue {
+
+extension Int8: JSONValue, Codable {
     public static func value(from object: Any) -> Int8? {
         switch object {
         case let x as String:
@@ -178,8 +229,20 @@ extension Int8: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> Int8? {
+        if decoder.containsValue(forKey: key) {
+            return Int8(decoder.decodeInt32(forKey: key))
+        }
+        return nil
+    }
 }
-extension Int16: JSONValue {
+
+extension Int16: JSONValue, Codable {
     public static func value(from object: Any) -> Int16? {
         switch object {
         case let x as String:
@@ -192,8 +255,20 @@ extension Int16: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> Int16? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+        return Int16(decoder.decodeInt32(forKey: key))
+    }
 }
-extension Int32: JSONValue {
+
+extension Int32: JSONValue, Codable {
     public static func value(from object: Any) -> Int32? {
         switch object {
         case let x as String:
@@ -206,8 +281,20 @@ extension Int32: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> Int32? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+        return decoder.decodeInt32(forKey: key)
+    }
 }
-extension Int64: JSONValue {
+
+extension Int64: JSONValue, Codable {
     public static func value(from object: Any) -> Int64? {
         switch object {
         case let x as String:
@@ -220,17 +307,40 @@ extension Int64: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> Int64? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+
+        return decoder.decodeInt64(forKey: key)
+    }
 }
 
 extension Array where Element: JSONValue {
     public static func value(from object: Any) -> [Element]? {
-        if let anyArray = object as? [Any]  {
+        if let anyArray = object as? [Any] {
             return anyArray.flatMap { Element.value(from: $0) as? Element }
         }
         return nil
     }
+
     public var jsonValue: Any? {
         return self.map { $0.jsonValue }
+    }
+}
+
+extension Array {
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> [Element]? {
+        return decoder.decodeObject(forKey: key) as? [Element]
     }
 }
 
@@ -240,7 +350,7 @@ extension Array where Element: RawRepresentable, Element.RawValue: JSONValue {
     }
 }
 
-extension UInt: JSONValue {
+extension UInt: JSONValue, Codable {
     public static func value(from object: Any) -> UInt? {
         switch object {
         case let x as String:
@@ -253,8 +363,21 @@ extension UInt: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> UInt? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+
+        return UInt(decoder.decodeInt32(forKey: key))
+    }
 }
-extension UInt8: JSONValue {
+
+extension UInt8: JSONValue, Codable {
     public static func value(from object: Any) -> UInt8? {
         switch object {
         case let x as String:
@@ -267,8 +390,20 @@ extension UInt8: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> UInt8? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+        return UInt8(decoder.decodeInt32(forKey: key))
+    }
 }
-extension UInt16: JSONValue {
+
+extension UInt16: JSONValue, Codable {
     public static func value(from object: Any) -> UInt16? {
         switch object {
         case let x as String:
@@ -281,8 +416,20 @@ extension UInt16: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> UInt16? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+        return UInt16(decoder.decodeInt32(forKey: key))
+    }
 }
-extension UInt32: JSONValue {
+
+extension UInt32: JSONValue, Codable {
     public static func value(from object: Any) -> UInt32? {
         switch object {
         case let x as String:
@@ -295,8 +442,20 @@ extension UInt32: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> UInt32? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+        return UInt32(decoder.decodeInt64(forKey: key))
+    }
 }
-extension UInt64: JSONValue {
+
+extension UInt64: JSONValue, Codable {
     public static func value(from object: Any) -> UInt64? {
         switch object {
         case let x as String:
@@ -309,11 +468,22 @@ extension UInt64: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> UInt64? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+        return UInt64(decoder.decodeInt64(forKey: key))
+    }
 }
 
-private let trueValues = Set(["true","True","TRUE","yes","Yes","YES","1","on","On","ON"])
+private let trueValues = Set(["true", "True", "TRUE", "yes", "Yes", "YES", "1", "on", "On", "ON"])
 
-extension Bool: JSONValue {
+extension Bool: JSONValue, Codable {
     public static func value(from object: Any) -> Bool? {
         switch object {
         case let x as String:
@@ -326,8 +496,20 @@ extension Bool: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> Bool? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+        return decoder.decodeBool(forKey: key)
+    }
 }
-extension Float: JSONValue {
+
+extension Float: JSONValue, Codable {
     public static func value(from object: Any) -> Float? {
         switch object {
         case let x as String:
@@ -340,8 +522,20 @@ extension Float: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> Float? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+        return decoder.decodeFloat(forKey: key)
+    }
 }
-extension Double: JSONValue {
+
+extension Double: JSONValue, Codable {
     public static func value(from object: Any) -> Double? {
         switch object {
         case let x as String:
@@ -354,8 +548,20 @@ extension Double: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> Double? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+        return decoder.decodeDouble(forKey: key)
+    }
 }
-extension CGFloat: JSONValue {
+
+extension CGFloat: JSONValue, Codable {
     public static func value(from object: Any) -> CGFloat? {
         switch object {
         case let x as String:
@@ -374,29 +580,61 @@ extension CGFloat: JSONValue {
             return nil
         }
     }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(Double(self), forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> CGFloat? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+        return CGFloat(decoder.decodeDouble(forKey: key))
+    }
 }
-extension URL: JSONValue {
+
+extension URL: JSONValue, Codable {
     public static func value(from object: Any) -> URL? {
         if let str = String.value(from: object) {
             return URL(string: str)
         }
         return nil
     }
+
     public var jsonValue: Any? {
         return self.absoluteString
+    }
+
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self.absoluteString, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> URL? {
+        guard let i = decoder.decodeObject(forKey: key) as? String else {
+            return nil
+        }
+        return URL(string: i)
+    }
+}
+
+public extension NSCoding { // Make any class conforming to NSCoding work like Codable
+    public func encode(with coder: NSCoder, forKey key: String) {
+        coder.encode(self, forKey: key)
+    }
+
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> Self? {
+        return decoder.decodeObject(forKey: key) as? Self
     }
 }
 
 public protocol DictionaryConvertible: JSONValue {
-    associatedtype Convertible = Self
-
     init?(dictionary: JSONDictionary)
     func dictionaryRepresentation() -> [String: Any]
 }
 
 extension DictionaryConvertible {
-    public static func value(from object: Any) -> Convertible? {
-        if let convertedObject = object as? JSONDictionary, let value = self.init(dictionary: convertedObject) as? Convertible  {
+    public static func value(from object: Any) -> Self? {
+        if let convertedObject = object as? JSONDictionary, let value = self.init(dictionary: convertedObject) {
             return value
         }
         return nil
@@ -426,26 +664,5 @@ extension DictionaryConvertible {
 
     public func read(from dictionary: JSONDictionary) {
         fatalError("read(from:) not implemented, run JSON cast with -read option")
-    }
-}
-
-extension NSCoder {
-    open func encode<A:RawRepresentable>(_ enm: A, forKey key: String) where A.RawValue == String {
-        encode(enm.rawValue, forKey: key)
-    }
-
-    open func encode<A:RawRepresentable>(_ enm: A, forKey key: String) where A.RawValue == Int {
-        encode(Int32(enm.rawValue), forKey: key)
-    }
-
-    open func decode<A:RawRepresentable>(forKey key: String) -> A? where A.RawValue == String {
-        if let raw = decodeObject(forKey: key) as? String {
-            return A(rawValue: raw)
-        }
-        return nil
-    }
-    open func decode<A:RawRepresentable>(forKey key: String) -> A? where A.RawValue == Int {
-        let raw = Int(decodeInt32(forKey: key))
-        return A(rawValue: raw)
     }
 }
