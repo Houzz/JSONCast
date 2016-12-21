@@ -50,5 +50,10 @@ class Classz: Classy {
 //! nscoding
 }
 
+class SubClass: Classx {
+    let yaw: Int
+    //! nscoding
+    //! super "classx"
+}
 
 

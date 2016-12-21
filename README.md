@@ -140,6 +140,16 @@ The `value(from:)` method is used to convert from JSON to a value. Note the impl
 
 You can write a custom parser to initialize a specific property, say you have a property `let powerMode: Int`, by adding a `//! custom` comment, cast will try to call a custom function that will get the dictionary as a parameter and should return an optional of the same type as the property, in this example the following will be called: `class func parsePowerMode(from dict: JSONDictionary) -> Int?`, the custom parser should return the value if the parsing was successful, or nil if not.
 
+### Default init[^t]
+
+JSON Cast can generate a default init for classes much like Swift generates a default init for structs. The default init will get as parameters all the class properties, any optional property will be optional in the init. To enable use the `-init` command line option which will generate a default init for all classes, or annotate the class with `//! init` which will generate a default init just for the annotated class.
+
+[^t]: Thanks to [n8han](https://github.com/n8han) for contributing the default init.
+
+### Derived Classes and Special JSON Tags for super classes
+
+You can derive from a `DictionaryConvertible` class, simply mark in the cast file the class inherits from another class. If JSON Cast does not see the `DictionaryConvertible` protocol conformance in the class decleration it assumes this is because the class inhertis from another class that is `DictionaryConvertible`. The generated init will read the current class from the dictionary and call `super.init(dicgtionary: dict)` to initialize the super class. If your JSON contains the super class tags as a sub-dictionary, you can annotate the class with `//! super "key"` which will cause JSON Cast to call super with the value of `dict[key]`.
+
 =======
 ### Awake
 

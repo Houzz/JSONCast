@@ -77,5 +77,11 @@ class CastingAppTests: XCTestCase {
         XCTAssert(a.age == 60)
     }
 
+    func testSuperTag() {
+        let a = SubClass(json: "{ \"Yaw\": 3, \"classx\": { \"Name\": \"Donald\", \"Age\": 60 } }")!
+        XCTAssert(a.age == 60)
+        XCTAssert(a.yaw == 3)
+    }
+
     
 }

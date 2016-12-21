@@ -20,6 +20,7 @@ var houzzLogging = false
 var disableHouzzzLogging = false
 var generateDefaultInit = false
 var classWantsDefaultInit = false
+var superTag: String? = nil
 
 class Regex {
     private let expression: NSRegularExpression
@@ -221,7 +222,14 @@ func createFunctions() {
     }
 
     if !override.isEmpty {
-        output.append("\t\tsuper.init(dictionary: dict)")
+        if let superTag = superTag {
+            output.append("guard let superDict = dict.any(forKeyPath: \"\(superTag)\") as? JSONDictionary else {")
+            output.append("return nil")
+            output.append("}")
+            output.append("super.init(dictionary: superDict)")
+        } else {
+            output.append("\t\tsuper.init(dictionary: dict)")
+        }
     } else if classInheritence!.contains("DictionaryConvertible") && classInheritence![0] != "DictionaryConvertible" && !isStruct && override.isEmpty {
         output.append("\t\tsuper.init()")
     }
@@ -251,7 +259,14 @@ func createFunctions() {
         }
 
         if !override.isEmpty {
-            output.append("\t\tsuper.read(from: dict)")
+            if let superTag = superTag {
+                output.append("guard let superDict = dict.any(forKeyPath: \"\(superTag)\") as? JSONDictionary else {")
+                output.append("return")
+                output.append("}")
+                output.append("super.read(from: superDict)")
+            } else {
+                output.append("\t\tsuper.read(from: dict)")
+            }
         }
 
         output.append("\t\t}")
@@ -263,7 +278,11 @@ func createFunctions() {
     if override.isEmpty {
         output.append("\t\tvar dict = [String: Any]()")
     } else {
-        output.append("\t\tvar dict = super.dictionaryRepresentation()")
+        if let superTag = superTag {
+            output.append("\t\tvar dict:[String:Any] = [\"\(superTag)\": super.dictionaryRepresentation()]")
+        } else {
+            output.append("\t\tvar dict = super.dictionaryRepresentation()")
+        }
     }
 
 
@@ -399,6 +418,7 @@ var inImportBlock = false
 var commentRegex = Regex("^ *//[^!].*$")
 let disableLogging = Regex("//! *nolog")
 let classInit = Regex("//! +init\\b")
+let superTagRegex = Regex("//! +super +\"([^\"]+)\"")
 
 output.append("// ================================================================== ")
 output.append("//")
@@ -475,6 +495,10 @@ for line in input {
                 } else if let matches: [String?] = varRegex.matchGroups(line) {
                     variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], asIsKey: !(matches[5]?.isEmpty ?? true), key: matches[6], useCustom: matches[7] != nil))
                     outline = line.replace(varRegex, with: " $1 $2: $3")
+                } else if let matches: [String?] = superTagRegex.matchGroups(line) {
+                    if let str = matches[1] {
+                        superTag = str
+                    }
                 }
             }
         } else if priorBraceLevel == 0 {
@@ -496,6 +520,7 @@ for line in input {
                 nscoding = false
                 disableHouzzzLogging = false
                 classWantsDefaultInit = false
+                superTag = nil
             }
         }
     }
