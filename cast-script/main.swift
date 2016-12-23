@@ -214,12 +214,14 @@ func createFunctions() {
 
     // init
     let reqStr = isStruct ? "" : "required"
+    let initAccess =  classAccess == "open" ? "public" : classAccess
 
-    output.append("\(reqStr) \(classAccess) init?(dictionary dict: JSONDictionary) {")
+    output.append("\(reqStr) \(initAccess) init?(dictionary dict: JSONDictionary) {")
 
     for variable in variables {
         variable.generateRead(nilMissing: true)
     }
+
 
     if !override.isEmpty {
         if let superTag = superTag {
@@ -320,7 +322,7 @@ func createFunctions() {
         let codingOverrideString = codingOverride ? "override" : ""
 
         // init(coder:)
-        output.append("\trequired \(classAccess) init?(coder aDecoder: NSCoder) {")
+        output.append("\trequired \(initAccess) init?(coder aDecoder: NSCoder) {")
 
         for variable in variables {
             output.append(variable.decodeCall)
@@ -510,12 +512,9 @@ for line in input {
                 isStruct = (matches[1] == "struct")
                 isObjc = line.contains("@objc")
                 if let matches: [String?] = accessRegex.matchGroups(line) {
-                    classAccess = matches[1] ?? "internal"
-                    if classAccess == "open" {
-                        classAccess = "public"
-                    }
+                    classAccess = matches[1] ?? ""
                 } else {
-                    classAccess = "internal"
+                    classAccess = ""
                 }
                 nscoding = false
                 disableHouzzzLogging = false
