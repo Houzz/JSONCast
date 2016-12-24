@@ -243,7 +243,7 @@ func createFunctions() {
     // init(values...)
     if generateDefaultInit || classWantsDefaultInit {
         let params = variables.map { return $0.getInitParam() }.joined(separator: ", ")
-        output.append("\tinit(\(params)) {")
+        output.append("\t\(initAccess) init(\(params)) {")
         for variable in variables {
             output.append(variable.getInitAssign())
         }
