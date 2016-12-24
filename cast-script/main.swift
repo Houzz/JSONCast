@@ -235,9 +235,9 @@ func createFunctions() {
     } else if classInheritence!.contains("DictionaryConvertible") && classInheritence![0] != "DictionaryConvertible" && !isStruct && override.isEmpty {
         output.append("\t\tsuper.init()")
     }
-    if override.isEmpty {
-        output.append("\t\tif !awake(with: dict) { return nil }")
-    }
+    output.append("\t\tif type(of: self) == \(className!).self {")
+        output.append("\t\t\tif !awake(with: dict) { return nil }")
+    output.append("\t\t}")
     output.append("\t}")
 
     // init(values...)
