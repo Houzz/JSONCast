@@ -231,7 +231,7 @@ extension Int8: JSONValue, Codable {
     }
 
     public func encode(with coder: NSCoder, forKey key: String) {
-        coder.encode(self, forKey: key)
+        coder.encode(Int32(self), forKey: key)
     }
 
     public static func decode(with decoder: NSCoder, fromKey key: String) -> Int8? {
