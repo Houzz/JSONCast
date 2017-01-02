@@ -170,11 +170,13 @@ struct VarInfo {
         } else {
             assignments = key.map { "dict.value(for: \"\($0)\")" }
         }
+        if doNil {
         if let defaultValue = defaultValue {
             assignments.append("\(defaultValue)")
         }
+        }
         let assignExpr = assignments.joined(separator: " ?? ")
-        if optional || isNullable || defaultValue != nil {
+        if (optional || isNullable || defaultValue != nil) && doNil {
             output.append("\t\t\(name) = \(assignExpr)")
         } else {
             output.append("\t\tif let v:\(type) = \(assignExpr) {")
