@@ -565,7 +565,10 @@ extension CGFloat: JSONValue, Codable {
     public static func value(from object: Any) -> CGFloat? {
         switch object {
         case let x as String:
-            return CGFloat(Double(x)!)
+            guard let d = Double(x) else {
+                return nil
+            }
+            return CGFloat(d)
 
         case let x as Double:
             return CGFloat(x)
