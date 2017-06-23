@@ -1,4 +1,4 @@
-#!/usr/bin/env -i xcrun -sdk macosx swift
+#!/usr/bin/env -i xcrun -sdk macosx swift -swift-version 3
 // Copyright © 2016 Houzz. All rights reserved.
 
 import Foundation
