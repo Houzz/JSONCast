@@ -97,7 +97,7 @@ extension RawRepresentable {
     }
 }
 
-extension RawRepresentable where RawValue: Codable {
+extension RawRepresentable where RawValue: Castable {
     public static func decode(with decoder: NSCoder, fromKey key: String) -> Self? {
         guard let i = RawValue.decode(with: decoder, fromKey: key) else {
             return nil
@@ -172,12 +172,12 @@ extension JSONValue {
     }
 }
 
-public protocol Codable {
+public protocol Castable {
     func encode(with coder: NSCoder, forKey key: String)
     static func decode(with decoder: NSCoder, fromKey key: String) -> Self?
 }
 
-extension String: JSONValue, Codable {
+extension String: JSONValue, Castable {
     public func encode(with coder: NSCoder, forKey key: String) {
         coder.encode(self, forKey: key)
     }
@@ -190,7 +190,7 @@ extension String: JSONValue, Codable {
     }
 }
 
-extension Int: JSONValue, Codable {
+extension Int: JSONValue, Castable {
     public static func value(from object: Any) -> Int? {
         switch object {
         case let x as String:
@@ -216,7 +216,7 @@ extension Int: JSONValue, Codable {
     }
 }
 
-extension Int8: JSONValue, Codable {
+extension Int8: JSONValue, Castable {
     public static func value(from object: Any) -> Int8? {
         switch object {
         case let x as String:
@@ -242,7 +242,7 @@ extension Int8: JSONValue, Codable {
     }
 }
 
-extension Int16: JSONValue, Codable {
+extension Int16: JSONValue, Castable {
     public static func value(from object: Any) -> Int16? {
         switch object {
         case let x as String:
@@ -268,7 +268,7 @@ extension Int16: JSONValue, Codable {
     }
 }
 
-extension Int32: JSONValue, Codable {
+extension Int32: JSONValue, Castable {
     public static func value(from object: Any) -> Int32? {
         switch object {
         case let x as String:
@@ -294,7 +294,7 @@ extension Int32: JSONValue, Codable {
     }
 }
 
-extension Int64: JSONValue, Codable {
+extension Int64: JSONValue, Castable {
     public static func value(from object: Any) -> Int64? {
         switch object {
         case let x as String:
@@ -350,7 +350,7 @@ extension Array where Element: RawRepresentable, Element.RawValue: JSONValue {
     }
 }
 
-extension UInt: JSONValue, Codable {
+extension UInt: JSONValue, Castable {
     public static func value(from object: Any) -> UInt? {
         switch object {
         case let x as String:
@@ -377,7 +377,7 @@ extension UInt: JSONValue, Codable {
     }
 }
 
-extension UInt8: JSONValue, Codable {
+extension UInt8: JSONValue, Castable {
     public static func value(from object: Any) -> UInt8? {
         switch object {
         case let x as String:
@@ -403,7 +403,7 @@ extension UInt8: JSONValue, Codable {
     }
 }
 
-extension UInt16: JSONValue, Codable {
+extension UInt16: JSONValue, Castable {
     public static func value(from object: Any) -> UInt16? {
         switch object {
         case let x as String:
@@ -429,7 +429,7 @@ extension UInt16: JSONValue, Codable {
     }
 }
 
-extension UInt32: JSONValue, Codable {
+extension UInt32: JSONValue, Castable {
     public static func value(from object: Any) -> UInt32? {
         switch object {
         case let x as String:
@@ -455,7 +455,7 @@ extension UInt32: JSONValue, Codable {
     }
 }
 
-extension UInt64: JSONValue, Codable {
+extension UInt64: JSONValue, Castable {
     public static func value(from object: Any) -> UInt64? {
         switch object {
         case let x as String:
@@ -483,7 +483,7 @@ extension UInt64: JSONValue, Codable {
 
 private let trueValues = Set(["true", "True", "TRUE", "yes", "Yes", "YES", "1", "on", "On", "ON"])
 
-extension Bool: JSONValue, Codable {
+extension Bool: JSONValue, Castable {
     public static func value(from object: Any) -> Bool? {
         switch object {
         case let x as String:
@@ -509,7 +509,7 @@ extension Bool: JSONValue, Codable {
     }
 }
 
-extension Float: JSONValue, Codable {
+extension Float: JSONValue, Castable {
     public static func value(from object: Any) -> Float? {
         switch object {
         case let x as String:
@@ -535,7 +535,7 @@ extension Float: JSONValue, Codable {
     }
 }
 
-extension Double: JSONValue, Codable {
+extension Double: JSONValue, Castable {
     public static func value(from object: Any) -> Double? {
         switch object {
         case let x as String:
@@ -561,7 +561,7 @@ extension Double: JSONValue, Codable {
     }
 }
 
-extension CGFloat: JSONValue, Codable {
+extension CGFloat: JSONValue, Castable {
     public static func value(from object: Any) -> CGFloat? {
         switch object {
         case let x as String:
@@ -596,7 +596,7 @@ extension CGFloat: JSONValue, Codable {
     }
 }
 
-extension URL: JSONValue, Codable {
+extension URL: JSONValue, Castable {
     public static func value(from object: Any) -> URL? {
         if let str = String.value(from: object) {
             return URL(string: str)
@@ -620,7 +620,7 @@ extension URL: JSONValue, Codable {
     }
 }
 
-public extension NSCoding { // Make any class conforming to NSCoding work like Codable
+public extension NSCoding { // Make any class conforming to NSCoding work like Castable
     public func encode(with coder: NSCoder, forKey key: String) {
         coder.encode(self, forKey: key)
     }
