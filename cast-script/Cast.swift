@@ -178,6 +178,19 @@ public protocol Castable {
 }
 
 extension String: JSONValue, Castable {
+    public static func value(from object: Any) -> String? {
+        switch object {
+        case let v as String:
+            return v
+
+        case let v as Int:
+            return String(describing: v)
+
+        default:
+            return nil
+        }
+    }
+
     public func encode(with coder: NSCoder, forKey key: String) {
         coder.encode(self, forKey: key)
     }
