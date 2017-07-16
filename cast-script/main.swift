@@ -89,10 +89,12 @@ struct VarInfo {
     let isNullable: Bool
     let isLet: Bool
     let useCustomParse: Bool
+    let skip: Bool
 
-    init(name: String, isLet: Bool, type: String, defaultValue: String? = nil, asIsKey: Bool, key in_key: String? = nil, useCustom: Bool = false) {
+    init(name: String, isLet: Bool, type: String, defaultValue: String? = nil, asIsKey: Bool, key in_key: String? = nil, useCustom: Bool = false, skip: Bool = false) {
         self.name = name
         self.isLet = isLet
+        self.skip = skip
         useCustomParse = useCustom
         if type.hasSuffix("?") || type.hasSuffix("!") {
             self.isNullable = true
@@ -163,6 +165,9 @@ struct VarInfo {
     }
 
     func generateRead(nilMissing doNil: Bool) {
+        guard skip == false else {
+            return
+        }
         var assignments: [String]
         if useCustomParse {
             let caseName = "\(name[0].uppercased())\(name[1 ..< name.characters.count])"
@@ -193,7 +198,10 @@ struct VarInfo {
         }
     }
 
-    func getInitParam() -> String {
+    func getInitParam() -> String? {
+        if skip {
+            return nil
+        }
         let optPart = optional || self.isNullable ? "?" : ""
         let defaultValue = self.defaultValue ?? (self.optional  ? "nil" : nil)
         return "\(name): \(type)\(optPart)" + (defaultValue.map { " = " + $0 } ?? "")
@@ -221,6 +229,9 @@ func createFunctions() {
     output.append("\(reqStr) \(initAccess) init?(dictionary dict: JSONDictionary) {")
 
     for variable in variables {
+        if variable.skip {
+            continue
+        }
         variable.generateRead(nilMissing: true)
     }
 
@@ -244,10 +255,12 @@ func createFunctions() {
 
     // init(values...)
     if generateDefaultInit || classWantsDefaultInit {
-        let params = variables.map { return $0.getInitParam() }.joined(separator: ", ")
+        let params = variables.flatMap { return $0.getInitParam() }.joined(separator: ", ")
         output.append("\t\(initAccess) init(\(params)) {")
         for variable in variables {
+            if variable.skip == false {
             output.append(variable.getInitAssign())
+            }
         }
         output.append("\t}")
     }
@@ -411,6 +424,7 @@ let classRegex = Regex("(class|struct) +([^ :]+)[ :]+(.*)\\{ *$", options: [.anc
 let endBrace = Regex("\\}")
 let openBrace = Regex("\\{")
 let varRegex = Regex("(var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *(?://! *(v?)\"([^\"]+)\")?(?://! *(custom))?")
+let skipVarRegex = Regex("(var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *//! *skip json")
 let dictRegex = Regex("(var|let) +([^: ]+?) *: *(\\[.*?:.*?\\][!?]) *(?:= *([^ ]+))? *(?://! *(v?)\"([^ ]+)\")?(?://! *(custom))?")
 let ignoreRegex = Regex("(.*)//! *ignore", options: [.caseInsensitive])
 let codingRegex = Regex("//! *nscoding", options: [.caseInsensitive])
@@ -493,13 +507,16 @@ for line in input {
                 } else if disableLogging.match(line) {
                     disableHouzzzLogging = true
                     continue
-                } else if let matches: [String?] = dictRegex.matchGroups(line) {
+                } else if let matches: [String?] = skipVarRegex.matchGroups(line) {
+                    variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], asIsKey: true, key: nil, useCustom: false, skip: true))
+                    outline = line
+               } else if let matches: [String?] = dictRegex.matchGroups(line) {
                     variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], asIsKey: !(matches[5]?.isEmpty ?? true), key: matches[6], useCustom: matches[7] != nil))
                     outline = line.replace(dictRegex, with: " $1 $2: $3")
                 } else if let matches: [String?] = varRegex.matchGroups(line) {
                     variables.append(VarInfo(name: matches[2]!, isLet: matches[1]! == "let", type: matches[3]!, defaultValue: matches[4], asIsKey: !(matches[5]?.isEmpty ?? true), key: matches[6], useCustom: matches[7] != nil))
                     outline = line.replace(varRegex, with: " $1 $2: $3")
-                } else if let matches: [String?] = superTagRegex.matchGroups(line) {
+                 } else if let matches: [String?] = superTagRegex.matchGroups(line) {
                     if let str = matches[1] {
                         superTag = str
                     }

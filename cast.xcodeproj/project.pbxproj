@@ -97,7 +97,7 @@
 		E46F92A91CF0802F00BFE4AF /* CastingAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CastingAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E46F92AD1CF0802F00BFE4AF /* CastingAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingAppTests.swift; sourceTree = "<group>"; };
 		E46F92AF1CF0802F00BFE4AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E46F92B61CF0805900BFE4AF /* Classy.cast */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; fileEncoding = 4; path = Classy.cast; sourceTree = "<group>"; };
+		E46F92B61CF0805900BFE4AF /* Classy.cast */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Classy.cast; sourceTree = "<group>"; };
 		E4A509B61CF0A496007DA42E /* CastTV.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CastTV.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 

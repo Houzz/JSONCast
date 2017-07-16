@@ -9,13 +9,14 @@
 import Foundation
 import CoreGraphics
 
-enum What: String {
+public enum What: String {
     case yes = "yes"
     case no = "no"
     case maybe = "maybe"
 }
 
 @objc public class Classy: NSObject, DictionaryConvertible, NSCoding, NSCopying {
+     lazy var skip: Int = 8 //! skip json
     var powerMode: Int
     var cust: Int //! custom
     let x: Int! = nil
@@ -36,21 +37,23 @@ enum What: String {
             return x
         }
     }
+
+    //! init
 }
 
-class Classx: NSObject, DictionaryConvertible, NSCoding {
+public class Classx: NSObject, DictionaryConvertible, NSCoding {
     let name: String = ""
     let age: Int = 0
     var opt: Int?
     //! init
 }
 
-class Classz: Classy {
+public class Classz: Classy {
     var another: String! = nil
 //! nscoding
 }
 
-class SubClass: Classx {
+public class SubClass: Classx {
     let yaw: Int
     //! nscoding
     //! super "classx"
