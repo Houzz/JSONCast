@@ -20,6 +20,7 @@ var houzzLogging = false
 var disableHouzzzLogging = false
 var generateDefaultInit = false
 var classWantsDefaultInit = false
+var awakeFromRead = false
 var superTag: String? = nil
 
 class Regex {
@@ -285,7 +286,10 @@ func createFunctions() {
                 output.append("\t\tsuper.read(from: dict)")
             }
         }
-
+        
+        if awakeFromRead {
+            output.append("\t\t\t let _ = awake(with: dict)")
+        }
         output.append("\t\t}")
     }
 
@@ -436,6 +440,7 @@ var inImportBlock = false
 var commentRegex = Regex("^ *//[^!].*$")
 let disableLogging = Regex("//! *nolog")
 let classInit = Regex("//! +init\\b")
+let awakeFromReadRegex = Regex("//! +awakeFromRead\\b")
 let superTagRegex = Regex("//! +super +\"([^\"]+)\"")
 
 output.append("// ================================================================== ")
@@ -503,6 +508,9 @@ for line in input {
                     continue
                 } else if classInit.match(line){
                     classWantsDefaultInit = true
+                    continue
+                } else if awakeFromReadRegex.match(line){
+                    awakeFromRead = true
                     continue
                 } else if disableLogging.match(line) {
                     disableHouzzzLogging = true
