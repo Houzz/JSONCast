@@ -249,9 +249,9 @@ func createFunctions() {
     } else if classInheritence!.contains("DictionaryConvertible") && classInheritence![0] != "DictionaryConvertible" && !isStruct && override.isEmpty {
         output.append("\t\tsuper.init()")
     }
-    output.append("\t\tif type(of: self) == \(className!).self {")
+    if override == "" {
         output.append("\t\t\tif !awake(with: dict) { return nil }")
-    output.append("\t\t}")
+    }
     output.append("\t}")
 
     // init(values...)
@@ -308,6 +308,9 @@ func createFunctions() {
 
 
     for variable in variables {
+        if variable.skip {
+            continue;
+        }
         let optStr = variable.optional ? "?" : ""
         let keys = variable.key.first!.components(separatedBy: "/")
         for (idx, key) in keys.enumerated() {
@@ -428,7 +431,7 @@ let classRegex = Regex("(class|struct) +([^ :]+)[ :]+(.*)\\{ *$", options: [.anc
 let endBrace = Regex("\\}")
 let openBrace = Regex("\\{")
 let varRegex = Regex("(var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *(?://! *(v?)\"([^\"]+)\")?(?://! *(custom))?")
-let skipVarRegex = Regex("(var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *//! *skip json")
+let skipVarRegex = Regex("(var|let) +([^: ]+?) *: *([^ ]+) *(?:= *([^ ]+))? *//! *ignore json")
 let dictRegex = Regex("(var|let) +([^: ]+?) *: *(\\[.*?:.*?\\][!?]) *(?:= *([^ ]+))? *(?://! *(v?)\"([^ ]+)\")?(?://! *(custom))?")
 let ignoreRegex = Regex("(.*)//! *ignore", options: [.caseInsensitive])
 let codingRegex = Regex("//! *nscoding", options: [.caseInsensitive])
@@ -501,7 +504,7 @@ for line in input {
                 inClass = false
                 createFunctions()
             } else if priorBraceLevel == 1 {
-                if ignoreRegex.match(line) {
+                if ignoreRegex.match(line) && !skipVarRegex.match(line) {
                     outline = line.replace(ignoreRegex, with: "$1")
                 } else if codingRegex.match(line) {
                     nscoding = true && !isStruct
