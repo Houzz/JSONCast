@@ -295,7 +295,8 @@ func createFunctions() {
 
 
     // dictionaryRepresentation()
-    output.append("\t\(override) \(classAccess) func dictionaryRepresentation() -> [String: Any] {")
+
+    output.append("\t\(isObjc ? "@objc" : "") \(override) \(classAccess) func dictionaryRepresentation() -> [String: Any] {")
     if override.isEmpty {
         output.append("\t\tvar dict = [String: Any]()")
     } else {
@@ -378,11 +379,11 @@ func createFunctions() {
 
     if isObjc && override.isEmpty {
         // class was declard @objc and is a base class not inhereting from other DictionaryConvertible classes
-        output.append("\tconvenience init?(dictionary: [String: Any]) {")
+        output.append("\t@objc convenience init?(dictionary: [String: Any]) {")
         output.append("\t\tself.init(dictionary: dictionary as JSONDictionary)")
         output.append("\t}")
         if generateRead {
-        output.append("func read(from dict: [String: Any]) {")
+        output.append("@objc func read(from dict: [String: Any]) {")
         output.append(" read(from: dict as JSONDictionary)")
         output.append("}")
         }
