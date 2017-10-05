@@ -43,12 +43,12 @@ public extension JSONDictionary {
 
         for component in pathComponents {
             if let openIndex = component.range(of: "["), let closeIndex = component.range(of: "]") {
-                let path = component.substring(to: openIndex.lowerBound)
-                let indexString = component.substring(with: Range(uncheckedBounds: (openIndex.upperBound, closeIndex.lowerBound)))
+                let path = component[..<openIndex.lowerBound]
+                let indexString = component[openIndex.upperBound ..< closeIndex.lowerBound]
                 guard let index = Int(indexString) else {
                     return nil
                 }
-                if let componentData = accumulator as? Self, let value = componentData.any(for: path) as? [Any], value.count > index {
+                if let componentData = accumulator as? Self, let value = componentData.any(for: String(path)) as? [Any], value.count > index {
                     accumulator = value[index]
                     continue
                 }
@@ -142,8 +142,8 @@ extension NSDictionary: JSONDictionary, JSONValue {
 
         for component in pathComponents {
             if let openIndex = component.range(of: "["), let closeIndex = component.range(of: "]") {
-                let path = component.substring(to: openIndex.lowerBound)
-                let indexString = component.substring(with: Range(uncheckedBounds: (openIndex.upperBound, closeIndex.lowerBound)))
+                let path = String(component[..<openIndex.lowerBound])
+                let indexString = component[openIndex.upperBound ..< closeIndex.lowerBound]
                 guard let index = Int(indexString) else {
                     return nil
                 }
