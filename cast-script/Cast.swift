@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreGraphics
+import SceneKit
 
 public protocol JSONValue {
     associatedtype Value = Self
@@ -667,5 +668,62 @@ extension DictionaryConvertible {
 
     public func read(from dictionary: JSONDictionary) {
         fatalError("read(from:) not implemented, run JSON cast with -read option")
+    }
+}
+
+extension SCNMatrix4: JSONValue, Castable {
+    
+    public static func decode(with decoder: NSCoder, fromKey key: String) -> SCNMatrix4? {
+        guard decoder.containsValue(forKey: key) else {
+            return nil
+        }
+        let arr: [Float] = decoder.decodeObject(forKey: key) as! [Float]
+        return SCNMatrix4(m11: arr[0],
+                          m12: arr[1],
+                          m13: arr[2],
+                          m14: arr[3],
+                          m21: arr[4],
+                          m22: arr[5],
+                          m23: arr[6],
+                          m24: arr[7],
+                          m31: arr[8],
+                          m32: arr[9],
+                          m33: arr[10],
+                          m34: arr[11],
+                          m41: arr[12],
+                          m42: arr[13],
+                          m43: arr[14],
+                          m44: arr[15])
+    }
+    
+    public static func value(from object: Any) -> SCNMatrix4? {
+        print( String(describing: type(of: object)))
+        switch object {
+        case let x as [String]:
+            return SCNMatrix4(m11: Float(x[0])!,
+                              m12: Float(x[1])!,
+                              m13: Float(x[2])!,
+                              m14: Float(x[3])!,
+                              m21: Float(x[4])!,
+                              m22: Float(x[5])!,
+                              m23: Float(x[6])!,
+                              m24: Float(x[7])!,
+                              m31: Float(x[8])!,
+                              m32: Float(x[9])!,
+                              m33: Float(x[10])!,
+                              m34: Float(x[11])!,
+                              m41: Float(x[12])!,
+                              m42: Float(x[13])!,
+                              m43: Float(x[14])!,
+                              m44: Float(x[15])!)
+            
+        default:
+            return nil
+        }
+    }
+    
+    public func encode(with coder: NSCoder, forKey key: String) {
+        let array: [Float] = [self.m11, self.m12, self.m13, self.m14, self.m21, self.m22, self.m23, self.m24, self.m31, self.m32, self.m33, self.m34, self.m41, self.m42, self.m43, self.m44]
+        coder.encode(array, forKey: key)
     }
 }
