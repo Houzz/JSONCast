@@ -696,6 +696,11 @@ extension SCNMatrix4: JSONValue, Castable {
                           m44: arr[15])
     }
     
+    public var jsonValue: Any? {
+        let array: [Float] = [self.m11, self.m12, self.m13, self.m14, self.m21, self.m22, self.m23, self.m24, self.m31, self.m32, self.m33, self.m34, self.m41, self.m42, self.m43, self.m44]
+        return array
+    }
+    
     public static func value(from object: Any) -> SCNMatrix4? {
         print( String(describing: type(of: object)))
         switch object {
@@ -716,6 +721,24 @@ extension SCNMatrix4: JSONValue, Castable {
                               m42: Float(x[13])!,
                               m43: Float(x[14])!,
                               m44: Float(x[15])!)
+            
+        case let x as [Float]:
+            return SCNMatrix4(m11: x[0],
+                              m12: x[1],
+                              m13: x[2],
+                              m14: x[3],
+                              m21: x[4],
+                              m22: x[5],
+                              m23: x[6],
+                              m24: x[7],
+                              m31: x[8],
+                              m32: x[9],
+                              m33: x[10],
+                              m34: x[11],
+                              m41: x[12],
+                              m42: x[13],
+                              m43: x[14],
+                              m44: x[15])
             
         default:
             return nil
