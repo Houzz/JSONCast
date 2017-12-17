@@ -707,7 +707,6 @@ extension SCNMatrix4: JSONValue, Castable {
     }
     
     public static func value(from object: Any) -> SCNMatrix4? {
-        print( String(describing: type(of: object)))
         switch object {
         case let x as [String]:
             return SCNMatrix4(m11: Float(x[0])!,
