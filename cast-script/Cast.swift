@@ -34,6 +34,7 @@ extension String: JSONKey {
 public protocol JSONDictionary {
     func any(forKeyPath path: JSONKey) -> Any?
     func any(for key: String) -> Any?
+    var isEmpty: Bool { get }
 }
 
 public extension JSONDictionary {
@@ -132,6 +133,10 @@ extension Dictionary where Key: JSONKey {
 }
 
 extension NSDictionary: JSONDictionary, JSONValue {
+    public var isEmpty: Bool {
+        return self.count == 0
+    }
+
     public func any(for key: String) -> Any? {
         return self.object(forKey: key)
     }
