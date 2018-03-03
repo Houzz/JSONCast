@@ -32,7 +32,7 @@ class Regex {
     }
 
     func matchGroups(_ input: String) -> [String?]? {
-        match = expression.firstMatch(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
+        match = expression.firstMatch(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.count))
         if let match = match {
             var captures = [String?]()
             for group in 0 ..< match.numberOfRanges {
@@ -51,16 +51,16 @@ class Regex {
     }
 
     func match(_ input: String) -> Bool {
-        match = expression.firstMatch(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count))
+        match = expression.firstMatch(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.count))
         return match != nil
     }
 
     func replace(_ input: String, with template: String) -> String {
-        return expression.stringByReplacingMatches(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count), withTemplate: template)
+        return expression.stringByReplacingMatches(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.count), withTemplate: template)
     }
 
     func numberOfMatchesIn(_ input: String) -> Int {
-        return expression.matches(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.characters.count)).count
+        return expression.matches(in: input, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, input.count)).count
     }
 }
 
@@ -109,9 +109,9 @@ struct VarInfo {
 
         self.key = (in_key ?? name).components(separatedBy: "??").map {
             return $0.components(separatedBy: "/").map({
-                var correctCaseKey: String = $0.trimmingCharacters(in: CharacterSet.whitespaces)
+                let correctCaseKey: String = $0.trimmingCharacters(in: CharacterSet.whitespaces)
                 if upperCase && !asIsKey {
-                    return "\(correctCaseKey[0].uppercased())\(correctCaseKey[1 ..< correctCaseKey.characters.count])"
+                    return "\(correctCaseKey[0].uppercased())\(correctCaseKey[1 ..< correctCaseKey.count])"
                 }
                 return correctCaseKey
             }).joined(separator:"/")
@@ -171,7 +171,7 @@ struct VarInfo {
         }
         var assignments: [String]
         if useCustomParse {
-            let caseName = "\(name[0].uppercased())\(name[1 ..< name.characters.count])"
+            let caseName = "\(name[0].uppercased())\(name[1 ..< name.count])"
             assignments = [ "\(className!).parse\(caseName)(from: dict)"]
         } else {
             assignments = key.map { "dict.value(for: \"\($0)\")" }
