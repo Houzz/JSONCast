@@ -1,0 +1,11 @@
+name: ai-usage-metrics
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  ai-usage-metrics:
+    if: github.event.pull_request.merged == true
+    uses: houzz/github-actions/.github/workflows/ai-usage-metrics.yaml@master
+    secrets: inherit
