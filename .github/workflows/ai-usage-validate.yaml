@@ -1,0 +1,40 @@
+name: ai-usage-validate
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, ready_for_review, synchronize, labeled, unlabeled]
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  post-survey-comment:
+    # Post survey on all PR events (idempotent — skips if already posted).
+    # Runs on all events (not just opened) so it backfills existing PRs on first activity.
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.user.type != 'Bot' &&
+      github.event.pull_request.user.login != 'opencode-agent'
+    uses: houzz/github-actions/.github/workflows/ai-usage-post-comment.yaml@master
+    secrets: inherit
+
+  post-survey-comment-opencode:
+    # Pre-filled survey for OpenCode PRs (both user and bot accounts).
+    if: |
+      github.event_name == 'pull_request' &&
+      (github.event.pull_request.user.login == 'opencode-agent[bot]' || github.event.pull_request.user.login == 'opencode-agent')
+    uses: houzz/github-actions/.github/workflows/ai-usage-post-comment.yaml@master
+    with:
+      prefill: opencode
+    secrets: inherit
+
+  ai-usage-validate:
+    needs: [post-survey-comment, post-survey-comment-opencode]
+    if: |
+      always() &&
+      ((github.event_name == 'pull_request') ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request.url != '' && contains(github.event.comment.body, '<!-- AI-USAGE-SURVEY -->')))
+    concurrency:
+      group: ai-usage-validate-${{ github.event.pull_request.number || github.event.issue.number }}
+      cancel-in-progress: true
+    uses: houzz/github-actions/.github/workflows/ai-usage-validate.yaml@master
+    secrets: inherit
